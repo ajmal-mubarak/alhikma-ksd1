@@ -185,7 +185,11 @@ app.delete('/api/admissions/:id', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
-});
+// Start server (only if run locally or not on serverless Vercel environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
