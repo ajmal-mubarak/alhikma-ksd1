@@ -203,6 +203,13 @@ export default function AdminDashboard() {
                           >
                             👁 View
                           </Link>
+                          <Link
+                            to={`/admin/edit/${a.id}`}
+                            className="btn-sm btn-edit"
+                            title="Edit form"
+                          >
+                            ✏️ Edit
+                          </Link>
                           <button
                             className="btn-sm btn-print"
                             onClick={() => handlePrint(a.id)}

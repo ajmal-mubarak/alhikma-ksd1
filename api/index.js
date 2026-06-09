@@ -185,6 +185,81 @@ app.delete('/api/admissions/:id', async (req, res) => {
   }
 });
 
+// 5. UPDATE ADMISSION
+app.put('/api/admissions/:id', async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  // Basic validation (matches validation in react form)
+  if (!data.name?.trim() || !data.fatherName?.trim() || !data.motherName?.trim() || 
+      !data.dob || !data.sex || !data.district?.trim() || !data.course?.trim() || 
+      !data.ownMobile?.trim()) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const query = `
+    UPDATE admissions SET
+      name = $1, adhaar_card = $2, father_name = $3, mother_name = $4, age = $5, dob = $6, sex = $7,
+      house = $8, place = $9, street = $10, post = $11, district = $12, pin = $13, email = $14,
+      course = $15, register_no = $16, month_of_passing = $17, year_of_passing = $18, percentage = $19,
+      board = $20, last_institution = $21, father_mobile = $22, mother_mobile = $23, own_mobile = $24,
+      admission_no = $25, enrollment_no = $26, class_admitted = $27, date_of_admission = $28,
+      certificates_received = $29, admission_fee = $30, miscellaneous = $31,
+      first_term = $32, second_term = $33, third_term = $34
+    WHERE id = $35
+    RETURNING *
+  `;
+
+  const values = [
+    data.name.toUpperCase(),
+    data.adhaarCard || null,
+    data.fatherName,
+    data.motherName,
+    data.age ? parseInt(data.age) : null,
+    data.dob,
+    data.sex,
+    data.house || null,
+    data.place || null,
+    data.street || null,
+    data.post || null,
+    data.district,
+    data.pin || null,
+    data.email || null,
+    data.course,
+    data.registerNo || null,
+    data.monthOfPassing || null,
+    data.yearOfPassing ? parseInt(data.yearOfPassing) : null,
+    data.percentage ? parseFloat(data.percentage) : null,
+    data.board || null,
+    data.lastInstitution || null,
+    data.fatherMobile || null,
+    data.motherMobile || null,
+    data.ownMobile,
+    data.admissionNo || '',
+    data.enrollmentNo || '',
+    data.classAdmitted || '',
+    data.dateOfAdmission || '',
+    data.certificatesReceived || '',
+    data.admissionFee || false,
+    data.miscellaneous || false,
+    data.firstTerm || false,
+    data.secondTerm || false,
+    data.thirdTerm || false,
+    id
+  ];
+
+  try {
+    const result = await pool.query(query, values);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Admission not found' });
+    }
+    res.json(toCamel(result.rows[0]));
+  } catch (err) {
+    console.error('Error updating admission:', err);
+    res.status(500).json({ error: 'Database error updating admission' });
+  }
+});
+
 // Start server (only if run locally or not on serverless Vercel environment)
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
