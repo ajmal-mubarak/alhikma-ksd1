@@ -52,6 +52,8 @@ export default function AdmissionForm() {
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [refNo, setRefNo] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -59,8 +61,9 @@ export default function AdmissionForm() {
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSubmitError('')
     const errs = validateForm(form)
     if (Object.keys(errs).length > 0) {
       setErrors(errs)
@@ -69,6 +72,7 @@ export default function AdmissionForm() {
       return
     }
 
+    setIsSubmitting(true)
     const ref = 'AHK-' + Date.now().toString().slice(-6)
     const submission = {
       ...form,
@@ -81,19 +85,35 @@ export default function AdmissionForm() {
       classAdmitted: '',
       dateOfAdmission: '',
       certificatesReceived: '',
-      admissionFee: '',
-      miscellaneous: '',
-      firstTerm: '',
-      secondTerm: '',
-      thirdTerm: '',
+      admissionFee: false,
+      miscellaneous: false,
+      firstTerm: false,
+      secondTerm: false,
+      thirdTerm: false,
     }
 
-    const existing = JSON.parse(localStorage.getItem('alhikma_admissions') || '[]')
-    existing.push(submission)
-    localStorage.setItem('alhikma_admissions', JSON.stringify(existing))
+    try {
+      const response = await fetch('/api/admissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submission),
+      });
 
-    setRefNo(ref)
-    setSubmitted(true)
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to submit application');
+      }
+
+      setRefNo(ref)
+      setSubmitted(true)
+    } catch (err) {
+      console.error('Submission error:', err);
+      setSubmitError(err.message || 'Server error. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const handleNewForm = () => {
@@ -101,6 +121,7 @@ export default function AdmissionForm() {
     setErrors({})
     setSubmitted(false)
     setRefNo('')
+    setSubmitError('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -112,16 +133,13 @@ export default function AdmissionForm() {
         <header className="header-bar">
           <div className="header-logo-area">
             <div className="header-emblem">
-              <img src="/logo_icon.png" alt="Al Hikma" style={{width:'100%',height:'100%',objectFit:'contain',padding:'4px'}} />
+              <img src="/logo.png" alt="Al Hikma" style={{width:'100%',height:'100%',objectFit:'contain',padding:'4px'}} />
             </div>
             <div className="header-text">
               <h1>Al Hikma Women's College</h1>
               <p>Indira Nagar, Kasaragod — Admission Portal 2026</p>
             </div>
           </div>
-          <nav className="header-nav">
-            <Link to="/admin">Admin Panel</Link>
-          </nav>
         </header>
         <div className="form-page-content">
           <div className="form-card fade-in">
@@ -430,9 +448,14 @@ export default function AdmissionForm() {
 
           {/* Submit */}
           <div className="submit-area">
-            <button type="submit" className="btn-submit" id="submitAdmission">
-              <span>📩</span>
-              Submit Application
+            {submitError && (
+              <p style={{ color: '#c0392b', marginBottom: 14, fontWeight: 600, fontSize: '0.9rem' }}>
+                ❌ {submitError}
+              </p>
+            )}
+            <button type="submit" className="btn-submit" id="submitAdmission" disabled={isSubmitting}>
+              <span>{isSubmitting ? '⏳' : '📩'}</span>
+              {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </button>
             <p style={{ marginTop: 14, fontSize: '0.8rem', color: '#aaa' }}>
               By submitting, you agree that all information provided is accurate.

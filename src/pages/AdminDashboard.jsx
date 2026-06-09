@@ -4,21 +4,41 @@ import { Link } from 'react-router-dom'
 export default function AdminDashboard() {
   const [admissions, setAdmissions] = useState([])
   const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     loadAdmissions()
   }, [])
 
-  const loadAdmissions = () => {
-    const data = JSON.parse(localStorage.getItem('alhikma_admissions') || '[]')
-    setAdmissions(data.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt)))
+  const loadAdmissions = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const response = await fetch('/api/admissions')
+      if (!response.ok) throw new Error('Failed to fetch admissions')
+      const data = await response.json()
+      setAdmissions(data)
+    } catch (err) {
+      console.error('Error loading admissions:', err)
+      setError('Could not load applications from database.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this admission?')) return
-    const updated = admissions.filter(a => a.id !== id)
-    localStorage.setItem('alhikma_admissions', JSON.stringify(updated))
-    setAdmissions(updated)
+    try {
+      const response = await fetch(`/api/admissions/${id}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) throw new Error('Failed to delete admission')
+      setAdmissions(prev => prev.filter(a => a.id !== id))
+    } catch (err) {
+      console.error('Error deleting admission:', err)
+      alert('Could not delete from database. Please try again.')
+    }
   }
 
   const handlePrint = (id) => {
@@ -96,7 +116,31 @@ export default function AdminDashboard() {
             />
           </div>
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="no-data" style={{ padding: '60px 20px' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>⏳</div>
+              <p style={{ fontWeight: 600, color: 'var(--text-muted)' }}>Loading applications...</p>
+            </div>
+          ) : error ? (
+            <div className="no-data" style={{ padding: '60px 20px' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: 12, color: '#c0392b' }}>⚠️</div>
+              <p style={{ fontWeight: 600, color: '#c0392b', marginBottom: 10 }}>{error}</p>
+              <button 
+                onClick={loadAdmissions} 
+                style={{ 
+                  padding: '8px 20px', 
+                  borderRadius: '20px', 
+                  border: 'none', 
+                  background: 'var(--teal)', 
+                  color: '#fff', 
+                  fontWeight: 600, 
+                  cursor: 'pointer' 
+                }}
+              >
+                🔄 Retry
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="no-data">
               <div className="no-data-icon">📭</div>
               <p style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: 6 }}>

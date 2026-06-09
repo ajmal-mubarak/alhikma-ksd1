@@ -701,10 +701,27 @@ export default function PrintView() {
   const didAutoPrint = useRef(false)
 
   useEffect(() => {
-    const all = JSON.parse(localStorage.getItem('alhikma_admissions') || '[]')
-    const found = all.find(a => a.id === id)
-    if (found) setData(found)
-    else setNotFound(true)
+    const loadAdmission = async () => {
+      try {
+        const response = await fetch(`/api/admissions/${id}`)
+        if (!response.ok) {
+          if (response.status === 404) {
+            setNotFound(true)
+          } else {
+            throw new Error('Server error')
+          }
+          return
+        }
+        const admissionData = await response.json()
+        setData(admissionData)
+      } catch (err) {
+        console.error('Error fetching admission details:', err)
+        setNotFound(true)
+      }
+    }
+    if (id) {
+      loadAdmission()
+    }
   }, [id])
 
   useEffect(() => {
