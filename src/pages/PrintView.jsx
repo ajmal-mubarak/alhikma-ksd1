@@ -126,7 +126,7 @@ export default function PrintView() {
     email: { top: 48.8, left: 18.0 },
     course: { top: 54.1, left: 10.0 },
     registerNo: { top: 54.1, left: 52.0 },
-    monthOfPassing: { top: 56.8, left: 16.0 },
+    monthOfPassing: { top: 56.8, left: 18.0 },
     yearOfPassing: { top: 56.8, left: 52.5 },
     percentage: { top: 59.5, left: 20.5 },
     board: { top: 59.5, left: 43.0 },
