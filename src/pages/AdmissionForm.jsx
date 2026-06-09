@@ -169,16 +169,13 @@ export default function AdmissionForm() {
       <header className="header-bar">
         <div className="header-logo-area">
           <div className="header-emblem">
-            <img src="/logo_0.jpeg" alt="Al Hikma" style={{width:'100%',height:'100%',objectFit:'cover'}} />
+            <img src="/logo.png" alt="Al Hikma" style={{width:'100%',height:'100%',objectFit:'contain',padding:'4px'}} />
           </div>
           <div className="header-text">
             <h1>Al Hikma Women's College</h1>
             <p>Indira Nagar, Kasaragod — Admission Portal 2026</p>
           </div>
         </div>
-        <nav className="header-nav">
-          <Link to="/admin">Admin Panel</Link>
-        </nav>
       </header>
 
       <div className="form-page-content">
