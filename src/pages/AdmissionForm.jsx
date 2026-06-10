@@ -35,15 +35,54 @@ const MONTHS = [
 
 function validateForm(data) {
   const errors = {}
-  if (!data.name.trim()) errors.name = 'Name is required'
-  if (!data.fatherName.trim()) errors.fatherName = "Father's name is required"
-  if (!data.motherName.trim()) errors.motherName = "Mother's name is required"
+  if (!data.name || !data.name.trim()) errors.name = 'Name is required'
+  if (!data.adhaarCard || !data.adhaarCard.trim()) errors.adhaarCard = 'Adhaar card number is required'
+  if (!data.fatherName || !data.fatherName.trim()) errors.fatherName = "Father's name is required"
+  if (!data.motherName || !data.motherName.trim()) errors.motherName = "Mother's name is required"
+  if (!data.age || !data.age.toString().trim()) errors.age = 'Age is required'
   if (!data.dob) errors.dob = 'Date of birth is required'
   if (!data.sex) errors.sex = 'Please select sex'
-  if (!data.district.trim()) errors.district = 'District is required'
-  if (!data.course.trim()) errors.course = 'Course is required'
-  if (!data.ownMobile.trim()) errors.ownMobile = 'Own mobile is required'
-  else if (!/^\d{10}$/.test(data.ownMobile.trim())) errors.ownMobile = 'Enter valid 10-digit number'
+  if (!data.house || !data.house.trim()) errors.house = 'House is required'
+  if (!data.place || !data.place.trim()) errors.place = 'Place is required'
+  if (!data.street || !data.street.trim()) errors.street = 'Street is required'
+  if (!data.post || !data.post.trim()) errors.post = 'Post office is required'
+  if (!data.district || !data.district.trim()) errors.district = 'District is required'
+  if (!data.pin || !data.pin.trim()) errors.pin = 'PIN code is required'
+  if (!data.email || !data.email.trim()) errors.email = 'Email address is required'
+  if (!data.course || !data.course.trim()) errors.course = 'Course is required'
+  if (!data.registerNo || !data.registerNo.trim()) errors.registerNo = 'Register number is required'
+  if (!data.monthOfPassing) errors.monthOfPassing = 'Month of passing is required'
+  if (!data.yearOfPassing || !data.yearOfPassing.toString().trim()) errors.yearOfPassing = 'Year of passing is required'
+  if (!data.percentage || !data.percentage.toString().trim()) errors.percentage = 'Percentage of marks is required'
+  if (!data.board || !data.board.trim()) errors.board = 'Board is required'
+  if (!data.lastInstitution || !data.lastInstitution.trim()) errors.lastInstitution = 'Name of institution is required'
+  if (!data.fatherMobile || !data.fatherMobile.trim()) errors.fatherMobile = "Father's mobile is required"
+  if (!data.motherMobile || !data.motherMobile.trim()) errors.motherMobile = "Mother's mobile is required"
+  if (!data.ownMobile || !data.ownMobile.trim()) errors.ownMobile = 'Own mobile is required'
+
+  // Format validations if fields are entered
+  if (data.ownMobile && data.ownMobile.trim() && !/^\d{10}$/.test(data.ownMobile.trim())) {
+    errors.ownMobile = 'Enter valid 10-digit number'
+  }
+  if (data.fatherMobile && data.fatherMobile.trim() && !/^\d{10}$/.test(data.fatherMobile.trim())) {
+    errors.fatherMobile = 'Enter valid 10-digit number'
+  }
+  if (data.motherMobile && data.motherMobile.trim() && !/^\d{10}$/.test(data.motherMobile.trim())) {
+    errors.motherMobile = 'Enter valid 10-digit number'
+  }
+  if (data.pin && data.pin.trim() && !/^\d{6}$/.test(data.pin.trim())) {
+    errors.pin = 'Enter valid 6-digit PIN code'
+  }
+  if (data.email && data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) {
+    errors.email = 'Enter valid email address'
+  }
+  if (data.adhaarCard && data.adhaarCard.trim()) {
+    const adhaarClean = data.adhaarCard.replace(/\s+/g, '');
+    if (!/^\d{12}$/.test(adhaarClean)) {
+      errors.adhaarCard = 'Enter valid 12-digit Adhaar Card number'
+    }
+  }
+
   return errors
 }
 
@@ -212,8 +251,8 @@ export default function AdmissionForm() {
             </div>
 
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
-              <div className="form-group">
-                <label htmlFor="adhaarCard">Adhaar Card Number</label>
+              <div className={fieldClass('adhaarCard')}>
+                <label htmlFor="adhaarCard">Adhaar Card Number *</label>
                 <input
                   id="adhaarCard"
                   name="adhaarCard"
@@ -222,7 +261,9 @@ export default function AdmissionForm() {
                   onChange={handleChange}
                   placeholder="XXXX XXXX XXXX"
                   maxLength={14}
+                  className={errors.adhaarCard ? 'error' : ''}
                 />
+                {errors.adhaarCard && <span className="error-msg">{errors.adhaarCard}</span>}
               </div>
             </div>
 
@@ -256,8 +297,8 @@ export default function AdmissionForm() {
             </div>
 
             <div className="field-grid grid-3" style={{ marginTop: 16 }}>
-              <div className="form-group">
-                <label htmlFor="age">Age</label>
+              <div className={fieldClass('age')}>
+                <label htmlFor="age">Age *</label>
                 <input
                   id="age"
                   name="age"
@@ -267,7 +308,9 @@ export default function AdmissionForm() {
                   placeholder="Age"
                   min={10}
                   max={60}
+                  className={errors.age ? 'error' : ''}
                 />
+                {errors.age && <span className="error-msg">{errors.age}</span>}
               </div>
               <div className={fieldClass('dob')}>
                 <label htmlFor="dob">Date of Birth *</label>
@@ -317,21 +360,57 @@ export default function AdmissionForm() {
           </div>
           <div className="form-section">
             <div className="field-grid grid-2">
-              <div className="form-group">
-                <label htmlFor="house">House</label>
-                <input id="house" name="house" type="text" value={form.house} onChange={handleChange} placeholder="House name / number" />
+              <div className={fieldClass('house')}>
+                <label htmlFor="house">House *</label>
+                <input
+                  id="house"
+                  name="house"
+                  type="text"
+                  value={form.house}
+                  onChange={handleChange}
+                  placeholder="House name / number"
+                  className={errors.house ? 'error' : ''}
+                />
+                {errors.house && <span className="error-msg">{errors.house}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="place">Place</label>
-                <input id="place" name="place" type="text" value={form.place} onChange={handleChange} placeholder="Place" />
+              <div className={fieldClass('place')}>
+                <label htmlFor="place">Place *</label>
+                <input
+                  id="place"
+                  name="place"
+                  type="text"
+                  value={form.place}
+                  onChange={handleChange}
+                  placeholder="Place"
+                  className={errors.place ? 'error' : ''}
+                />
+                {errors.place && <span className="error-msg">{errors.place}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="street">Street</label>
-                <input id="street" name="street" type="text" value={form.street} onChange={handleChange} placeholder="Street" />
+              <div className={fieldClass('street')}>
+                <label htmlFor="street">Street *</label>
+                <input
+                  id="street"
+                  name="street"
+                  type="text"
+                  value={form.street}
+                  onChange={handleChange}
+                  placeholder="Street"
+                  className={errors.street ? 'error' : ''}
+                />
+                {errors.street && <span className="error-msg">{errors.street}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="post">Post</label>
-                <input id="post" name="post" type="text" value={form.post} onChange={handleChange} placeholder="Post office" />
+              <div className={fieldClass('post')}>
+                <label htmlFor="post">Post *</label>
+                <input
+                  id="post"
+                  name="post"
+                  type="text"
+                  value={form.post}
+                  onChange={handleChange}
+                  placeholder="Post office"
+                  className={errors.post ? 'error' : ''}
+                />
+                {errors.post && <span className="error-msg">{errors.post}</span>}
               </div>
               <div className={fieldClass('district')}>
                 <label htmlFor="district">District *</label>
@@ -346,15 +425,34 @@ export default function AdmissionForm() {
                 />
                 {errors.district && <span className="error-msg">{errors.district}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="pin">PIN Code</label>
-                <input id="pin" name="pin" type="text" value={form.pin} onChange={handleChange} placeholder="6-digit PIN" maxLength={6} />
+              <div className={fieldClass('pin')}>
+                <label htmlFor="pin">PIN Code *</label>
+                <input
+                  id="pin"
+                  name="pin"
+                  type="text"
+                  value={form.pin}
+                  onChange={handleChange}
+                  placeholder="6-digit PIN"
+                  maxLength={6}
+                  className={errors.pin ? 'error' : ''}
+                />
+                {errors.pin && <span className="error-msg">{errors.pin}</span>}
               </div>
             </div>
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
-              <div className="form-group">
-                <label htmlFor="email">Email Address</label>
-                <input id="email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="example@email.com" />
+              <div className={fieldClass('email')}>
+                <label htmlFor="email">Email Address *</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="example@email.com"
+                  className={errors.email ? 'error' : ''}
+                />
+                {errors.email && <span className="error-msg">{errors.email}</span>}
               </div>
             </div>
           </div>
@@ -379,34 +477,91 @@ export default function AdmissionForm() {
                 />
                 {errors.course && <span className="error-msg">{errors.course}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="registerNo">Register No.</label>
-                <input id="registerNo" name="registerNo" type="text" value={form.registerNo} onChange={handleChange} placeholder="Exam register number" />
+              <div className={fieldClass('registerNo')}>
+                <label htmlFor="registerNo">Register No. *</label>
+                <input
+                  id="registerNo"
+                  name="registerNo"
+                  type="text"
+                  value={form.registerNo}
+                  onChange={handleChange}
+                  placeholder="Exam register number"
+                  className={errors.registerNo ? 'error' : ''}
+                />
+                {errors.registerNo && <span className="error-msg">{errors.registerNo}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="monthOfPassing">Month of Passing</label>
-                <select id="monthOfPassing" name="monthOfPassing" value={form.monthOfPassing} onChange={handleChange}>
+              <div className={fieldClass('monthOfPassing')}>
+                <label htmlFor="monthOfPassing">Month of Passing *</label>
+                <select
+                  id="monthOfPassing"
+                  name="monthOfPassing"
+                  value={form.monthOfPassing}
+                  onChange={handleChange}
+                  className={errors.monthOfPassing ? 'error' : ''}
+                >
                   <option value="">Select Month</option>
                   {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
+                {errors.monthOfPassing && <span className="error-msg">{errors.monthOfPassing}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="yearOfPassing">Year of Passing</label>
-                <input id="yearOfPassing" name="yearOfPassing" type="number" value={form.yearOfPassing} onChange={handleChange} placeholder="e.g. 2024" min={2000} max={2030} />
+              <div className={fieldClass('yearOfPassing')}>
+                <label htmlFor="yearOfPassing">Year of Passing *</label>
+                <input
+                  id="yearOfPassing"
+                  name="yearOfPassing"
+                  type="number"
+                  value={form.yearOfPassing}
+                  onChange={handleChange}
+                  placeholder="e.g. 2024"
+                  min={2000}
+                  max={2030}
+                  className={errors.yearOfPassing ? 'error' : ''}
+                />
+                {errors.yearOfPassing && <span className="error-msg">{errors.yearOfPassing}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="percentage">Percentage of Marks</label>
-                <input id="percentage" name="percentage" type="number" value={form.percentage} onChange={handleChange} placeholder="e.g. 85.5" min={0} max={100} step={0.01} />
+              <div className={fieldClass('percentage')}>
+                <label htmlFor="percentage">Percentage of Marks *</label>
+                <input
+                  id="percentage"
+                  name="percentage"
+                  type="number"
+                  value={form.percentage}
+                  onChange={handleChange}
+                  placeholder="e.g. 85.5"
+                  min={0}
+                  max={100}
+                  step={0.01}
+                  className={errors.percentage ? 'error' : ''}
+                />
+                {errors.percentage && <span className="error-msg">{errors.percentage}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="board">Board</label>
-                <input id="board" name="board" type="text" value={form.board} onChange={handleChange} placeholder="e.g. CBSE, State Board" />
+              <div className={fieldClass('board')}>
+                <label htmlFor="board">Board *</label>
+                <input
+                  id="board"
+                  name="board"
+                  type="text"
+                  value={form.board}
+                  onChange={handleChange}
+                  placeholder="e.g. CBSE, State Board"
+                  className={errors.board ? 'error' : ''}
+                />
+                {errors.board && <span className="error-msg">{errors.board}</span>}
               </div>
             </div>
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
-              <div className="form-group">
-                <label htmlFor="lastInstitution">Name of Institution Last Attended</label>
-                <input id="lastInstitution" name="lastInstitution" type="text" value={form.lastInstitution} onChange={handleChange} placeholder="Name of school / college" />
+              <div className={fieldClass('lastInstitution')}>
+                <label htmlFor="lastInstitution">Name of Institution Last Attended *</label>
+                <input
+                  id="lastInstitution"
+                  name="lastInstitution"
+                  type="text"
+                  value={form.lastInstitution}
+                  onChange={handleChange}
+                  placeholder="Name of school / college"
+                  className={errors.lastInstitution ? 'error' : ''}
+                />
+                {errors.lastInstitution && <span className="error-msg">{errors.lastInstitution}</span>}
               </div>
             </div>
           </div>
@@ -418,13 +573,33 @@ export default function AdmissionForm() {
           </div>
           <div className="form-section">
             <div className="phone-grid">
-              <div className="form-group">
-                <label htmlFor="fatherMobile">Father's Mobile</label>
-                <input id="fatherMobile" name="fatherMobile" type="tel" value={form.fatherMobile} onChange={handleChange} placeholder="10-digit number" maxLength={10} />
+              <div className={fieldClass('fatherMobile')}>
+                <label htmlFor="fatherMobile">Father's Mobile *</label>
+                <input
+                  id="fatherMobile"
+                  name="fatherMobile"
+                  type="tel"
+                  value={form.fatherMobile}
+                  onChange={handleChange}
+                  placeholder="10-digit number"
+                  maxLength={10}
+                  className={errors.fatherMobile ? 'error' : ''}
+                />
+                {errors.fatherMobile && <span className="error-msg">{errors.fatherMobile}</span>}
               </div>
-              <div className="form-group">
-                <label htmlFor="motherMobile">Mother's Mobile</label>
-                <input id="motherMobile" name="motherMobile" type="tel" value={form.motherMobile} onChange={handleChange} placeholder="10-digit number" maxLength={10} />
+              <div className={fieldClass('motherMobile')}>
+                <label htmlFor="motherMobile">Mother's Mobile *</label>
+                <input
+                  id="motherMobile"
+                  name="motherMobile"
+                  type="tel"
+                  value={form.motherMobile}
+                  onChange={handleChange}
+                  placeholder="10-digit number"
+                  maxLength={10}
+                  className={errors.motherMobile ? 'error' : ''}
+                />
+                {errors.motherMobile && <span className="error-msg">{errors.motherMobile}</span>}
               </div>
               <div className={fieldClass('ownMobile')}>
                 <label htmlFor="ownMobile">Own Mobile *</label>

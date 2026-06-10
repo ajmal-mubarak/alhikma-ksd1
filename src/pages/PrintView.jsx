@@ -130,7 +130,7 @@ export default function PrintView() {
     yearOfPassing: { top: 56.8, left: 52.5 },
     percentage: { top: 59.5, left: 20.5 },
     board: { top: 59.5, left: 43.0 },
-    lastInstitution: { top: 62.2, left: 40.0 },
+    lastInstitution: { top: 62.2, left: 45.0 },
     fatherMobile: { top: 69.8, left: 6.7 },
     motherMobile: { top: 69.8, left: 30.8 },
     ownMobile: { top: 69.8, left: 60.5 },
