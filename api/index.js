@@ -94,12 +94,25 @@ app.get('/api/admissions/:id', async (req, res) => {
 // 3. CREATE NEW ADMISSION
 app.post('/api/admissions', async (req, res) => {
   const data = req.body;
-  
-  // Basic validation (matches validation in react form)
-  if (!data.name?.trim() || !data.fatherName?.trim() || !data.motherName?.trim() || 
-      !data.dob || !data.sex || !data.district?.trim() || !data.course?.trim() || 
-      !data.ownMobile?.trim()) {
-    return res.status(400).json({ error: 'Missing required fields' });
+
+  // Generate sequential refNo if not provided (pattern AHC26G###)
+  // Finds the highest existing AHC26G### and increments it (including manually edited ones)
+  let refNo = data.refNo
+  try {
+    if (!refNo) {
+      const r = await pool.query("SELECT ref_no FROM admissions WHERE ref_no LIKE 'AHC26G%' ORDER BY CAST(SUBSTRING(ref_no, 8) AS INTEGER) DESC LIMIT 1");
+      if (r.rows.length === 0 || !r.rows[0].ref_no) {
+        refNo = 'AHC26G001'
+      } else {
+        const last = r.rows[0].ref_no
+        const m = last.match(/(\d+)$/)
+        const next = m ? parseInt(m[1], 10) + 1 : 1
+        refNo = 'AHC26G' + String(next).padStart(3, '0')
+      }
+    }
+  } catch (err) {
+    console.error('Error generating refNo:', err);
+    return res.status(500).json({ error: 'Server error generating reference number' });
   }
 
   const query = `
@@ -121,7 +134,7 @@ app.post('/api/admissions', async (req, res) => {
 
   const values = [
     data.id,
-    data.refNo,
+    refNo,
     data.name.toUpperCase(), // Store name in capitals as requested
     data.adhaarCard || null,
     data.fatherName,
@@ -190,42 +203,37 @@ app.put('/api/admissions/:id', async (req, res) => {
   const { id } = req.params;
   const data = req.body;
 
-  // Basic validation (matches validation in react form)
-  if (!data.name?.trim() || !data.fatherName?.trim() || !data.motherName?.trim() || 
-      !data.dob || !data.sex || !data.district?.trim() || !data.course?.trim() || 
-      !data.ownMobile?.trim()) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
+  // Allow partial updates; admin can edit `ref_no` as well
   const query = `
     UPDATE admissions SET
-      name = $1, adhaar_card = $2, father_name = $3, mother_name = $4, age = $5, dob = $6, sex = $7,
-      house = $8, place = $9, street = $10, post = $11, district = $12, pin = $13, email = $14,
-      course = $15, register_no = $16, month_of_passing = $17, year_of_passing = $18, percentage = $19,
-      board = $20, last_institution = $21, father_mobile = $22, mother_mobile = $23, own_mobile = $24,
-      admission_no = $25, enrollment_no = $26, class_admitted = $27, date_of_admission = $28,
-      certificates_received = $29, admission_fee = $30, miscellaneous = $31,
-      first_term = $32, second_term = $33, third_term = $34
-    WHERE id = $35
+      ref_no = $1, name = $2, adhaar_card = $3, father_name = $4, mother_name = $5, age = $6, dob = $7, sex = $8,
+      house = $9, place = $10, street = $11, post = $12, district = $13, pin = $14, email = $15,
+      course = $16, register_no = $17, month_of_passing = $18, year_of_passing = $19, percentage = $20,
+      board = $21, last_institution = $22, father_mobile = $23, mother_mobile = $24, own_mobile = $25,
+      admission_no = $26, enrollment_no = $27, class_admitted = $28, date_of_admission = $29,
+      certificates_received = $30, admission_fee = $31, miscellaneous = $32,
+      first_term = $33, second_term = $34, third_term = $35
+    WHERE id = $36
     RETURNING *
   `;
 
   const values = [
-    data.name.toUpperCase(),
+    data.refNo !== undefined ? data.refNo : null,
+    data.name ? data.name.toUpperCase() : null,
     data.adhaarCard || null,
-    data.fatherName,
-    data.motherName,
+    data.fatherName || null,
+    data.motherName || null,
     data.age ? parseInt(data.age) : null,
-    data.dob,
-    data.sex,
+    data.dob || null,
+    data.sex || null,
     data.house || null,
     data.place || null,
     data.street || null,
     data.post || null,
-    data.district,
+    data.district || null,
     data.pin || null,
     data.email || null,
-    data.course,
+    data.course || null,
     data.registerNo || null,
     data.monthOfPassing || null,
     data.yearOfPassing ? parseInt(data.yearOfPassing) : null,
@@ -234,7 +242,7 @@ app.put('/api/admissions/:id', async (req, res) => {
     data.lastInstitution || null,
     data.fatherMobile || null,
     data.motherMobile || null,
-    data.ownMobile,
+    data.ownMobile || null,
     data.admissionNo || '',
     data.enrollmentNo || '',
     data.classAdmitted || '',

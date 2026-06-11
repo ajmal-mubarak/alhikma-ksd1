@@ -35,32 +35,12 @@ const MONTHS = [
 
 function validateForm(data) {
   const errors = {}
-  if (!data.name || !data.name.trim()) errors.name = 'Name is required'
-  if (!data.adhaarCard || !data.adhaarCard.trim()) errors.adhaarCard = 'Adhaar card number is required'
-  if (!data.fatherName || !data.fatherName.trim()) errors.fatherName = "Father's name is required"
-  if (!data.motherName || !data.motherName.trim()) errors.motherName = "Mother's name is required"
-  if (!data.age || !data.age.toString().trim()) errors.age = 'Age is required'
-  if (!data.dob) errors.dob = 'Date of birth is required'
-  if (!data.sex) errors.sex = 'Please select sex'
-  if (!data.house || !data.house.trim()) errors.house = 'House is required'
-  if (!data.place || !data.place.trim()) errors.place = 'Place is required'
-  if (!data.street || !data.street.trim()) errors.street = 'Street is required'
-  if (!data.post || !data.post.trim()) errors.post = 'Post office is required'
-  if (!data.district || !data.district.trim()) errors.district = 'District is required'
-  if (!data.pin || !data.pin.trim()) errors.pin = 'PIN code is required'
-  if (!data.email || !data.email.trim()) errors.email = 'Email address is required'
-  if (!data.course || !data.course.trim()) errors.course = 'Course is required'
-  if (!data.registerNo || !data.registerNo.trim()) errors.registerNo = 'Register number is required'
-  if (!data.monthOfPassing) errors.monthOfPassing = 'Month of passing is required'
-  if (!data.yearOfPassing || !data.yearOfPassing.toString().trim()) errors.yearOfPassing = 'Year of passing is required'
-  if (!data.percentage || !data.percentage.toString().trim()) errors.percentage = 'Percentage of marks is required'
-  if (!data.board || !data.board.trim()) errors.board = 'Board is required'
-  if (!data.lastInstitution || !data.lastInstitution.trim()) errors.lastInstitution = 'Name of institution is required'
-  if (!data.fatherMobile || !data.fatherMobile.trim()) errors.fatherMobile = "Father's mobile is required"
-  if (!data.motherMobile || !data.motherMobile.trim()) errors.motherMobile = "Mother's mobile is required"
-  if (!data.ownMobile || !data.ownMobile.trim()) errors.ownMobile = 'Own mobile is required'
 
-  // Format validations if fields are entered
+  // Required fields: name and father's name only
+  if (!data.name || !data.name.trim()) errors.name = 'Name is required'
+  if (!data.fatherName || !data.fatherName.trim()) errors.fatherName = "Father's name is required"
+
+  // Format validations (only run when a field is provided)
   if (data.ownMobile && data.ownMobile.trim() && !/^\d{10}$/.test(data.ownMobile.trim())) {
     errors.ownMobile = 'Enter valid 10-digit number'
   }
@@ -94,6 +74,34 @@ export default function AdmissionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
+  // Example / format hints shown under each input
+  const helperHints = {
+    name: 'ENTER FULL NAME IN CAPITALS',
+    adhaarCard: 'XXXX XXXX XXXX',
+    fatherName: "Father's full name",
+    motherName: "Mother's full name",
+    age: 'Age in years (10-60)',
+    dob: 'dd/mm/yyyy',
+    sex: 'Select Male or Female',
+    house: 'House name / number',
+    place: 'Place',
+    street: 'Street',
+    post: 'Post office',
+    district: 'District',
+    pin: '6-digit PIN',
+    email: 'example@email.com',
+    course: 'e.g. Plus Two, Degree',
+    registerNo: 'Exam register number',
+    monthOfPassing: 'Select month',
+    yearOfPassing: 'e.g. 2024',
+    percentage: 'e.g. 85.5',
+    board: 'e.g. CBSE, State Board',
+    lastInstitution: 'Name of school / college',
+    fatherMobile: '10-digit number',
+    motherMobile: '10-digit number',
+    ownMobile: '10-digit number',
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
@@ -103,6 +111,12 @@ export default function AdmissionForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitError('')
+    // If every field is empty, block submission and show message
+    const anyFilled = Object.values(form).some(v => String(v || '').trim() !== '')
+    if (!anyFilled) {
+      setSubmitError('Nothing to submit — please fill at least one field.')
+      return
+    }
     const errs = validateForm(form)
     if (Object.keys(errs).length > 0) {
       setErrors(errs)
@@ -112,11 +126,10 @@ export default function AdmissionForm() {
     }
 
     setIsSubmitting(true)
-    const ref = 'AHK-' + Date.now().toString().slice(-6)
     const submission = {
       ...form,
       id: Date.now().toString(),
-      refNo: ref,
+      // Do not set refNo here; backend will generate AHC26G### when missing
       submittedAt: new Date().toISOString(),
       // Office use fields (blank at submission time)
       admissionNo: '',
@@ -132,11 +145,12 @@ export default function AdmissionForm() {
     }
 
     try {
+      const headers = { 'Content-Type': 'application/json' }
+      if (anyFilled) headers['X-Allow-Partial'] = 'true'
+
       const response = await fetch('/api/admissions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(submission),
       });
 
@@ -145,7 +159,9 @@ export default function AdmissionForm() {
         throw new Error(errData.error || 'Failed to submit application');
       }
 
-      setRefNo(ref)
+      const saved = await response.json()
+      // use server-generated refNo (AHC26G###)
+      setRefNo(saved.refNo || '')
       setSubmitted(true)
     } catch (err) {
       console.error('Submission error:', err);
@@ -218,11 +234,11 @@ export default function AdmissionForm() {
       </header>
 
       <div className="form-page-content">
-        <div className="form-intro fade-in">
+          <div className="form-intro fade-in">
           <div className="form-badge">Academic Year 2026</div>
           <h2>Admission Application Form</h2>
           <p style={{color:'rgba(255,255,255,0.6)', fontSize:'0.88rem', marginTop:4}}>Al Hikma Women's College · Indira Nagar, Kasaragod – 671 541</p>
-          <p style={{marginTop:8}}>Fill in all required details carefully. Fields marked with <span style={{color:'#ff8080'}}>*</span> are mandatory.</p>
+          <p style={{marginTop:8}}>All fields are optional; provide information as applicable.</p>
         </div>
 
         <form className="form-card fade-in" onSubmit={handleSubmit} noValidate>
@@ -234,7 +250,7 @@ export default function AdmissionForm() {
           <div className="form-section">
             <div className="field-grid grid-1">
               <div className={fieldClass('name')}>
-                <label htmlFor="name">Name of Applicant (in Capital Letters) *</label>
+                <label htmlFor="name">Name of Applicant (in Capital Letters) <span style={{color:'#ff8080'}}>*</span></label>
                 <input
                   id="name"
                   name="name"
@@ -246,13 +262,14 @@ export default function AdmissionForm() {
                   className={errors.name ? 'error' : ''}
                   autoComplete="name"
                 />
-                {errors.name && <span className="error-msg">{errors.name}</span>}
+                  {helperHints.name && <div className="helper-text">{helperHints.name}</div>}
+                  {errors.name && <span className="error-msg">{errors.name}</span>}
               </div>
             </div>
 
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
               <div className={fieldClass('adhaarCard')}>
-                <label htmlFor="adhaarCard">Adhaar Card Number *</label>
+                <label htmlFor="adhaarCard">Adhaar Card Number</label>
                 <input
                   id="adhaarCard"
                   name="adhaarCard"
@@ -263,13 +280,14 @@ export default function AdmissionForm() {
                   maxLength={14}
                   className={errors.adhaarCard ? 'error' : ''}
                 />
+                {helperHints.adhaarCard && <div className="helper-text">{helperHints.adhaarCard}</div>}
                 {errors.adhaarCard && <span className="error-msg">{errors.adhaarCard}</span>}
               </div>
             </div>
 
             <div className="field-grid grid-2" style={{ marginTop: 16 }}>
               <div className={fieldClass('fatherName')}>
-                <label htmlFor="fatherName">Father's Name *</label>
+                <label htmlFor="fatherName">Father's Name <span style={{color:'#ff8080'}}>*</span></label>
                 <input
                   id="fatherName"
                   name="fatherName"
@@ -279,10 +297,11 @@ export default function AdmissionForm() {
                   placeholder="Father's full name"
                   className={errors.fatherName ? 'error' : ''}
                 />
+                {helperHints.fatherName && <div className="helper-text">{helperHints.fatherName}</div>}
                 {errors.fatherName && <span className="error-msg">{errors.fatherName}</span>}
               </div>
               <div className={fieldClass('motherName')}>
-                <label htmlFor="motherName">Mother's Name *</label>
+                <label htmlFor="motherName">Mother's Name</label>
                 <input
                   id="motherName"
                   name="motherName"
@@ -292,13 +311,14 @@ export default function AdmissionForm() {
                   placeholder="Mother's full name"
                   className={errors.motherName ? 'error' : ''}
                 />
+                {helperHints.motherName && <div className="helper-text">{helperHints.motherName}</div>}
                 {errors.motherName && <span className="error-msg">{errors.motherName}</span>}
               </div>
             </div>
 
             <div className="field-grid grid-3" style={{ marginTop: 16 }}>
               <div className={fieldClass('age')}>
-                <label htmlFor="age">Age *</label>
+                <label htmlFor="age">Age</label>
                 <input
                   id="age"
                   name="age"
@@ -310,10 +330,11 @@ export default function AdmissionForm() {
                   max={60}
                   className={errors.age ? 'error' : ''}
                 />
+                {helperHints.age && <div className="helper-text">{helperHints.age}</div>}
                 {errors.age && <span className="error-msg">{errors.age}</span>}
               </div>
               <div className={fieldClass('dob')}>
-                <label htmlFor="dob">Date of Birth *</label>
+                <label htmlFor="dob">Date of Birth</label>
                 <input
                   id="dob"
                   name="dob"
@@ -322,10 +343,11 @@ export default function AdmissionForm() {
                   onChange={handleChange}
                   className={errors.dob ? 'error' : ''}
                 />
+                {helperHints.dob && <div className="helper-text">{helperHints.dob}</div>}
                 {errors.dob && <span className="error-msg">{errors.dob}</span>}
               </div>
               <div className={fieldClass('sex')}>
-                <label>Sex *</label>
+                <label>Sex</label>
                 <div className="radio-group">
                   <label className="radio-option">
                     <input
@@ -348,6 +370,7 @@ export default function AdmissionForm() {
                     Female
                   </label>
                 </div>
+                {helperHints.sex && <div className="helper-text">{helperHints.sex}</div>}
                 {errors.sex && <span className="error-msg">{errors.sex}</span>}
               </div>
             </div>
@@ -361,7 +384,7 @@ export default function AdmissionForm() {
           <div className="form-section">
             <div className="field-grid grid-2">
               <div className={fieldClass('house')}>
-                <label htmlFor="house">House *</label>
+                <label htmlFor="house">House</label>
                 <input
                   id="house"
                   name="house"
@@ -371,10 +394,11 @@ export default function AdmissionForm() {
                   placeholder="House name / number"
                   className={errors.house ? 'error' : ''}
                 />
+                {helperHints.house && <div className="helper-text">{helperHints.house}</div>}
                 {errors.house && <span className="error-msg">{errors.house}</span>}
               </div>
               <div className={fieldClass('place')}>
-                <label htmlFor="place">Place *</label>
+                <label htmlFor="place">Place</label>
                 <input
                   id="place"
                   name="place"
@@ -384,10 +408,11 @@ export default function AdmissionForm() {
                   placeholder="Place"
                   className={errors.place ? 'error' : ''}
                 />
+                {helperHints.place && <div className="helper-text">{helperHints.place}</div>}
                 {errors.place && <span className="error-msg">{errors.place}</span>}
               </div>
               <div className={fieldClass('street')}>
-                <label htmlFor="street">Street *</label>
+                <label htmlFor="street">Street</label>
                 <input
                   id="street"
                   name="street"
@@ -397,10 +422,11 @@ export default function AdmissionForm() {
                   placeholder="Street"
                   className={errors.street ? 'error' : ''}
                 />
+                {helperHints.street && <div className="helper-text">{helperHints.street}</div>}
                 {errors.street && <span className="error-msg">{errors.street}</span>}
               </div>
               <div className={fieldClass('post')}>
-                <label htmlFor="post">Post *</label>
+                <label htmlFor="post">Post</label>
                 <input
                   id="post"
                   name="post"
@@ -410,10 +436,11 @@ export default function AdmissionForm() {
                   placeholder="Post office"
                   className={errors.post ? 'error' : ''}
                 />
+                {helperHints.post && <div className="helper-text">{helperHints.post}</div>}
                 {errors.post && <span className="error-msg">{errors.post}</span>}
               </div>
               <div className={fieldClass('district')}>
-                <label htmlFor="district">District *</label>
+                <label htmlFor="district">District</label>
                 <input
                   id="district"
                   name="district"
@@ -423,10 +450,11 @@ export default function AdmissionForm() {
                   placeholder="District"
                   className={errors.district ? 'error' : ''}
                 />
+                {helperHints.district && <div className="helper-text">{helperHints.district}</div>}
                 {errors.district && <span className="error-msg">{errors.district}</span>}
               </div>
               <div className={fieldClass('pin')}>
-                <label htmlFor="pin">PIN Code *</label>
+                <label htmlFor="pin">PIN Code</label>
                 <input
                   id="pin"
                   name="pin"
@@ -437,12 +465,13 @@ export default function AdmissionForm() {
                   maxLength={6}
                   className={errors.pin ? 'error' : ''}
                 />
+                {helperHints.pin && <div className="helper-text">{helperHints.pin}</div>}
                 {errors.pin && <span className="error-msg">{errors.pin}</span>}
               </div>
             </div>
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
               <div className={fieldClass('email')}>
-                <label htmlFor="email">Email Address *</label>
+                <label htmlFor="email">Email Address</label>
                 <input
                   id="email"
                   name="email"
@@ -452,6 +481,7 @@ export default function AdmissionForm() {
                   placeholder="example@email.com"
                   className={errors.email ? 'error' : ''}
                 />
+                {helperHints.email && <div className="helper-text">{helperHints.email}</div>}
                 {errors.email && <span className="error-msg">{errors.email}</span>}
               </div>
             </div>
@@ -465,7 +495,7 @@ export default function AdmissionForm() {
           <div className="form-section">
             <div className="field-grid grid-2">
               <div className={fieldClass('course')}>
-                <label htmlFor="course">Course *</label>
+                <label htmlFor="course">Course</label>
                 <input
                   id="course"
                   name="course"
@@ -475,10 +505,11 @@ export default function AdmissionForm() {
                   placeholder="e.g. Plus Two, Degree"
                   className={errors.course ? 'error' : ''}
                 />
+                {helperHints.course && <div className="helper-text">{helperHints.course}</div>}
                 {errors.course && <span className="error-msg">{errors.course}</span>}
               </div>
               <div className={fieldClass('registerNo')}>
-                <label htmlFor="registerNo">Register No. *</label>
+                <label htmlFor="registerNo">Register No.</label>
                 <input
                   id="registerNo"
                   name="registerNo"
@@ -488,10 +519,11 @@ export default function AdmissionForm() {
                   placeholder="Exam register number"
                   className={errors.registerNo ? 'error' : ''}
                 />
+                {helperHints.registerNo && <div className="helper-text">{helperHints.registerNo}</div>}
                 {errors.registerNo && <span className="error-msg">{errors.registerNo}</span>}
               </div>
               <div className={fieldClass('monthOfPassing')}>
-                <label htmlFor="monthOfPassing">Month of Passing *</label>
+                <label htmlFor="monthOfPassing">Month of Passing</label>
                 <select
                   id="monthOfPassing"
                   name="monthOfPassing"
@@ -502,10 +534,11 @@ export default function AdmissionForm() {
                   <option value="">Select Month</option>
                   {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
+                {helperHints.monthOfPassing && <div className="helper-text">{helperHints.monthOfPassing}</div>}
                 {errors.monthOfPassing && <span className="error-msg">{errors.monthOfPassing}</span>}
               </div>
               <div className={fieldClass('yearOfPassing')}>
-                <label htmlFor="yearOfPassing">Year of Passing *</label>
+                <label htmlFor="yearOfPassing">Year of Passing</label>
                 <input
                   id="yearOfPassing"
                   name="yearOfPassing"
@@ -517,10 +550,11 @@ export default function AdmissionForm() {
                   max={2030}
                   className={errors.yearOfPassing ? 'error' : ''}
                 />
+                {helperHints.yearOfPassing && <div className="helper-text">{helperHints.yearOfPassing}</div>}
                 {errors.yearOfPassing && <span className="error-msg">{errors.yearOfPassing}</span>}
               </div>
               <div className={fieldClass('percentage')}>
-                <label htmlFor="percentage">Percentage of Marks *</label>
+                <label htmlFor="percentage">Percentage of Marks</label>
                 <input
                   id="percentage"
                   name="percentage"
@@ -533,10 +567,11 @@ export default function AdmissionForm() {
                   step={0.01}
                   className={errors.percentage ? 'error' : ''}
                 />
+                {helperHints.percentage && <div className="helper-text">{helperHints.percentage}</div>}
                 {errors.percentage && <span className="error-msg">{errors.percentage}</span>}
               </div>
               <div className={fieldClass('board')}>
-                <label htmlFor="board">Board *</label>
+                <label htmlFor="board">Board</label>
                 <input
                   id="board"
                   name="board"
@@ -546,12 +581,13 @@ export default function AdmissionForm() {
                   placeholder="e.g. CBSE, State Board"
                   className={errors.board ? 'error' : ''}
                 />
+                {helperHints.board && <div className="helper-text">{helperHints.board}</div>}
                 {errors.board && <span className="error-msg">{errors.board}</span>}
               </div>
             </div>
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
               <div className={fieldClass('lastInstitution')}>
-                <label htmlFor="lastInstitution">Name of Institution Last Attended *</label>
+                <label htmlFor="lastInstitution">Name of Institution Last Attended</label>
                 <input
                   id="lastInstitution"
                   name="lastInstitution"
@@ -561,7 +597,8 @@ export default function AdmissionForm() {
                   placeholder="Name of school / college"
                   className={errors.lastInstitution ? 'error' : ''}
                 />
-                {errors.lastInstitution && <span className="error-msg">{errors.lastInstitution}</span>}
+                  {helperHints.lastInstitution && <div className="helper-text">{helperHints.lastInstitution}</div>}
+                  {errors.lastInstitution && <span className="error-msg">{errors.lastInstitution}</span>}
               </div>
             </div>
           </div>
@@ -574,7 +611,7 @@ export default function AdmissionForm() {
           <div className="form-section">
             <div className="phone-grid">
               <div className={fieldClass('fatherMobile')}>
-                <label htmlFor="fatherMobile">Father's Mobile *</label>
+                <label htmlFor="fatherMobile">Father's Mobile</label>
                 <input
                   id="fatherMobile"
                   name="fatherMobile"
@@ -585,10 +622,11 @@ export default function AdmissionForm() {
                   maxLength={10}
                   className={errors.fatherMobile ? 'error' : ''}
                 />
+                {helperHints.fatherMobile && <div className="helper-text">{helperHints.fatherMobile}</div>}
                 {errors.fatherMobile && <span className="error-msg">{errors.fatherMobile}</span>}
               </div>
               <div className={fieldClass('motherMobile')}>
-                <label htmlFor="motherMobile">Mother's Mobile *</label>
+                <label htmlFor="motherMobile">Mother's Mobile</label>
                 <input
                   id="motherMobile"
                   name="motherMobile"
@@ -599,10 +637,11 @@ export default function AdmissionForm() {
                   maxLength={10}
                   className={errors.motherMobile ? 'error' : ''}
                 />
+                {helperHints.motherMobile && <div className="helper-text">{helperHints.motherMobile}</div>}
                 {errors.motherMobile && <span className="error-msg">{errors.motherMobile}</span>}
               </div>
               <div className={fieldClass('ownMobile')}>
-                <label htmlFor="ownMobile">Own Mobile *</label>
+                <label htmlFor="ownMobile">Own Mobile</label>
                 <input
                   id="ownMobile"
                   name="ownMobile"
@@ -613,6 +652,7 @@ export default function AdmissionForm() {
                   maxLength={10}
                   className={errors.ownMobile ? 'error' : ''}
                 />
+                {helperHints.ownMobile && <div className="helper-text">{helperHints.ownMobile}</div>}
                 {errors.ownMobile && <span className="error-msg">{errors.ownMobile}</span>}
               </div>
             </div>

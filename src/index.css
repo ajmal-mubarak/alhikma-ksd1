@@ -264,6 +264,15 @@ html, body {
   margin-top: 2px;
 }
 
+/* Helper / example hint shown under inputs */
+.helper-text {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 4px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
 /* Radio group */
 .radio-group {
   display: flex;

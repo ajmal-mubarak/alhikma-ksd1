@@ -7,16 +7,27 @@ const MONTHS = [
 ]
 
 function validateForm(data) {
+  // Relaxed validation for admin edits: allow partial updates
   const errors = {}
-  if (!data.name?.trim()) errors.name = 'Name is required'
-  if (!data.fatherName?.trim()) errors.fatherName = "Father's name is required"
-  if (!data.motherName?.trim()) errors.motherName = "Mother's name is required"
-  if (!data.dob) errors.dob = 'Date of birth is required'
-  if (!data.sex) errors.sex = 'Please select sex'
-  if (!data.district?.trim()) errors.district = 'District is required'
-  if (!data.course?.trim()) errors.course = 'Course is required'
-  if (!data.ownMobile?.trim()) errors.ownMobile = 'Own mobile is required'
-  else if (!/^\d{10}$/.test(data.ownMobile.trim())) errors.ownMobile = 'Enter valid 10-digit number'
+  if (data.ownMobile && data.ownMobile.trim() && !/^\d{10}$/.test(data.ownMobile.trim())) {
+    errors.ownMobile = 'Enter valid 10-digit number'
+  }
+  if (data.fatherMobile && data.fatherMobile.trim() && !/^\d{10}$/.test(data.fatherMobile.trim())) {
+    errors.fatherMobile = 'Enter valid 10-digit number'
+  }
+  if (data.motherMobile && data.motherMobile.trim() && !/^\d{10}$/.test(data.motherMobile.trim())) {
+    errors.motherMobile = 'Enter valid 10-digit number'
+  }
+  if (data.pin && data.pin.trim() && !/^\d{6}$/.test(data.pin.trim())) {
+    errors.pin = 'Enter valid 6-digit PIN code'
+  }
+  if (data.email && data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) {
+    errors.email = 'Enter valid email address'
+  }
+  if (data.adhaarCard && data.adhaarCard.trim()) {
+    const ad = data.adhaarCard.replace(/\s+/g, '')
+    if (!/^\d{12}$/.test(ad)) errors.adhaarCard = 'Enter valid 12-digit Adhaar Card number'
+  }
   return errors
 }
 
@@ -164,6 +175,18 @@ export default function EditAdmission() {
                   onChange={handleChange}
                   placeholder="Office assigned admission number"
                 />
+              </div>
+              <div className="form-group">
+                <label htmlFor="refNo" style={{ color: '#1a3a4a' }}>Reference No.</label>
+                <input
+                  id="refNo"
+                  name="refNo"
+                  type="text"
+                  value={form.refNo || ''}
+                  onChange={handleChange}
+                  placeholder="e.g. AHC26G001"
+                />
+                <small style={{ color: '#555', marginTop: 6, display: 'block' }}>Edit the student reference number if needed.</small>
               </div>
               <div className="form-group">
                 <label htmlFor="enrollmentNo" style={{ color: '#1a3a4a' }}>Enrollment No.</label>
