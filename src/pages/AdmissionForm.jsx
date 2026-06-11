@@ -114,7 +114,7 @@ export default function AdmissionForm() {
     // If every field is empty, block submission and show message
     const anyFilled = Object.values(form).some(v => String(v || '').trim() !== '')
     if (!anyFilled) {
-      setSubmitError('Nothing to submit — please fill at least one field.')
+      setSubmitError('Nothing to submit — please fill Name And Fathers Name.')
       return
     }
     const errs = validateForm(form)
