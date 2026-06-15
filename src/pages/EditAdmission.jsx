@@ -171,7 +171,7 @@ export default function EditAdmission() {
                   id="admissionNo"
                   name="admissionNo"
                   type="text"
-                  value={form.admissionNo}
+                  value={form.admissionNo || ''}
                   onChange={handleChange}
                   placeholder="Office assigned admission number"
                 />
@@ -194,7 +194,7 @@ export default function EditAdmission() {
                   id="enrollmentNo"
                   name="enrollmentNo"
                   type="text"
-                  value={form.enrollmentNo}
+                  value={form.enrollmentNo || ''}
                   onChange={handleChange}
                   placeholder="Office assigned enrollment number"
                 />
@@ -205,7 +205,7 @@ export default function EditAdmission() {
                   id="classAdmitted"
                   name="classAdmitted"
                   type="text"
-                  value={form.classAdmitted}
+                  value={form.classAdmitted || ''}
                   onChange={handleChange}
                   placeholder="Class"
                 />
@@ -216,7 +216,7 @@ export default function EditAdmission() {
                   id="dateOfAdmission"
                   name="dateOfAdmission"
                   type="text"
-                  value={form.dateOfAdmission}
+                  value={form.dateOfAdmission || ''}
                   onChange={handleChange}
                   placeholder="DD/MM/YYYY"
                 />
@@ -230,7 +230,7 @@ export default function EditAdmission() {
                   id="certificatesReceived"
                   name="certificatesReceived"
                   type="text"
-                  value={form.certificatesReceived}
+                  value={form.certificatesReceived || ''}
                   onChange={handleChange}
                   placeholder="SSLC, Plus Two, TC, Conduct etc."
                 />
@@ -309,7 +309,7 @@ export default function EditAdmission() {
                   id="name"
                   name="name"
                   type="text"
-                  value={form.name}
+                  value={form.name || ''}
                   onChange={handleChange}
                   placeholder="ENTER FULL NAME IN CAPITALS"
                   style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
@@ -326,7 +326,7 @@ export default function EditAdmission() {
                   id="adhaarCard"
                   name="adhaarCard"
                   type="text"
-                  value={form.adhaarCard}
+                  value={form.adhaarCard || ''}
                   onChange={handleChange}
                   placeholder="XXXX XXXX XXXX"
                   maxLength={14}
@@ -341,7 +341,7 @@ export default function EditAdmission() {
                   id="fatherName"
                   name="fatherName"
                   type="text"
-                  value={form.fatherName}
+                  value={form.fatherName || ''}
                   onChange={handleChange}
                   placeholder="Father's full name"
                   className={errors.fatherName ? 'error' : ''}
@@ -354,7 +354,7 @@ export default function EditAdmission() {
                   id="motherName"
                   name="motherName"
                   type="text"
-                  value={form.motherName}
+                  value={form.motherName || ''}
                   onChange={handleChange}
                   placeholder="Mother's full name"
                   className={errors.motherName ? 'error' : ''}
@@ -370,7 +370,7 @@ export default function EditAdmission() {
                   id="age"
                   name="age"
                   type="number"
-                  value={form.age}
+                  value={form.age || ''}
                   onChange={handleChange}
                   placeholder="Age"
                   min={10}
@@ -427,19 +427,19 @@ export default function EditAdmission() {
             <div className="field-grid grid-2">
               <div className="form-group">
                 <label htmlFor="house">House</label>
-                <input id="house" name="house" type="text" value={form.house} onChange={handleChange} placeholder="House name / number" />
+                <input id="house" name="house" type="text" value={form.house || ''} onChange={handleChange} placeholder="House name / number" />
               </div>
               <div className="form-group">
                 <label htmlFor="place">Place</label>
-                <input id="place" name="place" type="text" value={form.place} onChange={handleChange} placeholder="Place" />
+                <input id="place" name="place" type="text" value={form.place || ''} onChange={handleChange} placeholder="Place" />
               </div>
               <div className="form-group">
                 <label htmlFor="street">Street</label>
-                <input id="street" name="street" type="text" value={form.street} onChange={handleChange} placeholder="Street" />
+                <input id="street" name="street" type="text" value={form.street || ''} onChange={handleChange} placeholder="Street" />
               </div>
               <div className="form-group">
                 <label htmlFor="post">Post</label>
-                <input id="post" name="post" type="text" value={form.post} onChange={handleChange} placeholder="Post office" />
+                <input id="post" name="post" type="text" value={form.post || ''} onChange={handleChange} placeholder="Post office" />
               </div>
               <div className={fieldClass('district')}>
                 <label htmlFor="district">District *</label>
@@ -447,7 +447,7 @@ export default function EditAdmission() {
                   id="district"
                   name="district"
                   type="text"
-                  value={form.district}
+                  value={form.district || ''}
                   onChange={handleChange}
                   placeholder="District"
                   className={errors.district ? 'error' : ''}
@@ -456,13 +456,13 @@ export default function EditAdmission() {
               </div>
               <div className="form-group">
                 <label htmlFor="pin">PIN Code</label>
-                <input id="pin" name="pin" type="text" value={form.pin} onChange={handleChange} placeholder="6-digit PIN" maxLength={6} />
+                <input id="pin" name="pin" type="text" value={form.pin || ''} onChange={handleChange} placeholder="6-digit PIN" maxLength={6} />
               </div>
             </div>
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
-                <input id="email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="example@email.com" />
+                <input id="email" name="email" type="email" value={form.email || ''} onChange={handleChange} placeholder="example@email.com" />
               </div>
             </div>
           </div>
@@ -480,7 +480,7 @@ export default function EditAdmission() {
                   id="course"
                   name="course"
                   type="text"
-                  value={form.course}
+                  value={form.course || ''}
                   onChange={handleChange}
                   placeholder="e.g. Plus Two, Degree"
                   className={errors.course ? 'error' : ''}
@@ -489,32 +489,32 @@ export default function EditAdmission() {
               </div>
               <div className="form-group">
                 <label htmlFor="registerNo">Register No.</label>
-                <input id="registerNo" name="registerNo" type="text" value={form.registerNo} onChange={handleChange} placeholder="Exam register number" />
+                <input id="registerNo" name="registerNo" type="text" value={form.registerNo || ''} onChange={handleChange} placeholder="Exam register number" />
               </div>
               <div className="form-group">
                 <label htmlFor="monthOfPassing">Month of Passing</label>
-                <select id="monthOfPassing" name="monthOfPassing" value={form.monthOfPassing} onChange={handleChange}>
+                <select id="monthOfPassing" name="monthOfPassing" value={form.monthOfPassing || ''} onChange={handleChange}>
                   <option value="">Select Month</option>
                   {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
               <div className="form-group">
                 <label htmlFor="yearOfPassing">Year of Passing</label>
-                <input id="yearOfPassing" name="yearOfPassing" type="number" value={form.yearOfPassing} onChange={handleChange} placeholder="e.g. 2024" min={2000} max={2030} />
+                <input id="yearOfPassing" name="yearOfPassing" type="number" value={form.yearOfPassing || ''} onChange={handleChange} placeholder="e.g. 2024" min={2000} max={2030} />
               </div>
               <div className="form-group">
                 <label htmlFor="percentage">Percentage of Marks</label>
-                <input id="percentage" name="percentage" type="number" value={form.percentage} onChange={handleChange} placeholder="e.g. 85.5" min={0} max={100} step={0.01} />
+                <input id="percentage" name="percentage" type="number" value={form.percentage || ''} onChange={handleChange} placeholder="e.g. 85.5" min={0} max={100} step={0.01} />
               </div>
               <div className="form-group">
                 <label htmlFor="board">Board</label>
-                <input id="board" name="board" type="text" value={form.board} onChange={handleChange} placeholder="e.g. CBSE, State Board" />
+                <input id="board" name="board" type="text" value={form.board || ''} onChange={handleChange} placeholder="e.g. CBSE, State Board" />
               </div>
             </div>
             <div className="field-grid grid-1" style={{ marginTop: 16 }}>
               <div className="form-group">
                 <label htmlFor="lastInstitution">Name of Institution Last Attended</label>
-                <input id="lastInstitution" name="lastInstitution" type="text" value={form.lastInstitution} onChange={handleChange} placeholder="Name of school / college" />
+                <input id="lastInstitution" name="lastInstitution" type="text" value={form.lastInstitution || ''} onChange={handleChange} placeholder="Name of school / college" />
               </div>
             </div>
           </div>
@@ -528,11 +528,11 @@ export default function EditAdmission() {
             <div className="phone-grid">
               <div className="form-group">
                 <label htmlFor="fatherMobile">Father's Mobile</label>
-                <input id="fatherMobile" name="fatherMobile" type="tel" value={form.fatherMobile} onChange={handleChange} placeholder="10-digit number" maxLength={10} />
+                <input id="fatherMobile" name="fatherMobile" type="tel" value={form.fatherMobile || ''} onChange={handleChange} placeholder="10-digit number" maxLength={10} />
               </div>
               <div className="form-group">
                 <label htmlFor="motherMobile">Mother's Mobile</label>
-                <input id="motherMobile" name="motherMobile" type="tel" value={form.motherMobile} onChange={handleChange} placeholder="10-digit number" maxLength={10} />
+                <input id="motherMobile" name="motherMobile" type="tel" value={form.motherMobile || ''} onChange={handleChange} placeholder="10-digit number" maxLength={10} />
               </div>
               <div className={fieldClass('ownMobile')}>
                 <label htmlFor="ownMobile">Own Mobile *</label>
@@ -540,7 +540,7 @@ export default function EditAdmission() {
                   id="ownMobile"
                   name="ownMobile"
                   type="tel"
-                  value={form.ownMobile}
+                  value={form.ownMobile || ''}
                   onChange={handleChange}
                   placeholder="10-digit number"
                   maxLength={10}

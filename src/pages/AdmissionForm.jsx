@@ -203,7 +203,7 @@ export default function AdmissionForm() {
               <h2>Application Submitted!</h2>
               <p>Your admission application has been received successfully.</p>
               <p style={{ marginTop: 6, color: '#888', fontSize: '0.88rem' }}>
-                Submitted on {new Date().toLocaleDateString('en-IN', { dateStyle: 'long' })}
+                Submitted on {new Date().toLocaleDateString('en-IN-u-nu-latn', { dateStyle: 'long' })}
               </p>
               <div className="success-ref">{refNo}</div>
               <p style={{ marginTop: 12, fontSize: '0.85rem', color: '#999' }}>

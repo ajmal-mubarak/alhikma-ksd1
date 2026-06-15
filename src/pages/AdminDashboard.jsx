@@ -185,12 +185,12 @@ export default function AdminDashboard() {
                       <td>{a.ownMobile || '—'}</td>
                       <td>{a.district || '—'}</td>
                       <td style={{ fontSize: '0.8rem', color: '#888' }}>
-                        {new Date(a.submittedAt).toLocaleDateString('en-IN', {
+                        {new Date(a.submittedAt).toLocaleDateString('en-IN-u-nu-latn', {
                           day: '2-digit', month: 'short', year: 'numeric'
                         })}
                         <br />
                         <span style={{ fontSize: '0.72rem' }}>
-                          {new Date(a.submittedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(a.submittedAt).toLocaleTimeString('en-IN-u-nu-latn', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </td>
                       <td><span className="status-badge">Received</span></td>

@@ -6,16 +6,17 @@ function V(val) { return val || '' }
 function formatDOB(str) {
   if (!str) return ''
   const [y, m, d] = str.split('-').map(Number)
-  return new Date(y, m - 1, d).toLocaleDateString('en-IN', {
+  return new Date(y, m - 1, d).toLocaleDateString('en-IN-u-nu-latn', {
     day: '2-digit', month: 'long', year: 'numeric',
   })
 }
 function formatDate(iso) {
   if (!iso) return ''
-  return new Date(iso).toLocaleDateString('en-IN', {
+  return new Date(iso).toLocaleDateString('en-IN-u-nu-latn', {
     day: '2-digit', month: 'long', year: 'numeric',
   })
 }
+
 
 /* ═══════════════════════════════════════════════════════════════
    COORDINATE SYSTEM
@@ -130,7 +131,7 @@ export default function PrintView() {
     yearOfPassing: { top: 56.8, left: 52.5 },
     percentage: { top: 59.5, left: 20.5 },
     board: { top: 59.5, left: 43.0 },
-    lastInstitution: { top: 62.2, left: 45.0 },
+    lastInstitution: { top: 62.2, left: 49.0 },
     fatherMobile: { top: 69.8, left: 6.7 },
     motherMobile: { top: 69.8, left: 30.8 },
     ownMobile: { top: 69.8, left: 60.5 },
@@ -197,7 +198,7 @@ export default function PrintView() {
       transform: 'translateY(-50%)',
       fontFamily: 'Arial, Helvetica, sans-serif',
       fontSize: '9.5pt',
-      fontWeight: '600',
+      fontWeight: '700',
       color: '#000',
       whiteSpace: 'nowrap',
       lineHeight: 1,
@@ -247,7 +248,7 @@ export default function PrintView() {
 
           {/* ── NAME OF THE APPLICANT ── */}
           <Field fieldId="name" style={{
-            fontWeight: 700,
+            fontWeight: 800,
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
           }}>
@@ -255,13 +256,13 @@ export default function PrintView() {
           </Field>
 
           {/* ── ADHAAR CARD NUMBER — 3 cells, left-aligned ── */}
-          <Field fieldId="adhaar1" style={{ fontFamily:'monospace', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar1" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.2em' }}>
             {aa1}
           </Field>
-          <Field fieldId="adhaar2" style={{ fontFamily:'monospace', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar2" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.2em' }}>
             {aa2}
           </Field>
-          <Field fieldId="adhaar3" style={{ fontFamily:'monospace', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar3" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.2em' }}>
             {aa3}
           </Field>
 
@@ -300,7 +301,7 @@ export default function PrintView() {
           {/* DISTRICT */}
           <Field fieldId="district">{V(data.district)}</Field>
           {/* PIN */}
-          <Field fieldId="pin" style={{ fontFamily:'monospace', letterSpacing:'0.1em' }}>
+          <Field fieldId="pin" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.1em' }}>
             {V(data.pin)}
           </Field>
 
@@ -312,7 +313,7 @@ export default function PrintView() {
           {/* COURSE */}
           <Field fieldId="course" style={{ width: '31.1%', textAlign: 'center' }}>{V(data.course)}</Field>
           {/* REGISTER NO */}
-          <Field fieldId="registerNo" style={{ fontFamily:'monospace', width: '29.2%', textAlign: 'center' }}>{V(data.registerNo)}</Field>
+          <Field fieldId="registerNo" style={{ fontFamily:'"Courier New", Courier, monospace', width: '29.2%', textAlign: 'center' }}>{V(data.registerNo)}</Field>
 
           {/* MONTH OF PASSING */}
           <Field fieldId="monthOfPassing" style={{ width: '21.1%', textAlign: 'center' }}>{V(data.monthOfPassing)}</Field>
@@ -334,19 +335,19 @@ export default function PrintView() {
           {/* ══════════ CONTACT NUMBERS (MOBILE) ══════════ */}
           <Field fieldId="fatherMobile" style={{
             width: '29%', textAlign: 'center',
-            fontFamily: 'monospace', letterSpacing: '0.07em',
+            fontFamily: '"Courier New", Courier, monospace', letterSpacing: '0.07em',
           }}>
             {V(data.fatherMobile)}
           </Field>
           <Field fieldId="motherMobile" style={{
             width: '29%', textAlign: 'center',
-            fontFamily: 'monospace', letterSpacing: '0.07em',
+            fontFamily: '"Courier New", Courier, monospace', letterSpacing: '0.07em',
           }}>
             {V(data.motherMobile)}
           </Field>
           <Field fieldId="ownMobile" style={{
             width: '29%', textAlign: 'center',
-            fontFamily: 'monospace', letterSpacing: '0.07em',
+            fontFamily: '"Courier New", Courier, monospace', letterSpacing: '0.07em',
           }}>
             {V(data.ownMobile)}
           </Field>
