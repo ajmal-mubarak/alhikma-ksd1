@@ -197,7 +197,7 @@ export default function PrintView() {
       left: `${pos.left}%`,
       transform: 'translateY(-50%)',
       fontFamily: 'Calibri, "Calibri", Calibri, Arial, sans-serif',
-      fontSize: '14pt',
+      fontSize: '12pt',
       fontWeight: '700',
       color: '#000',
       whiteSpace: 'nowrap',
