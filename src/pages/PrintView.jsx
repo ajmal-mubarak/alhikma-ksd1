@@ -118,18 +118,18 @@ export default function PrintView() {
     dob: { top: 35.4, left: 41.0 },
     sexMale: { top: 35.4, left: 78 },
     sexFemale: { top: 35.4, left: 87.8 },
-    house: { top: 40.8, left: 18.0 },
-    place: { top: 40.8, left: 58.0 },
-    street: { top: 43.5, left: 18.0 },
-    post: { top: 43.5, left: 58.0 },
-    district: { top: 46.2, left: 18.0 },
-    pin: { top: 46.2, left: 58.0 },
-    email: { top: 48.8, left: 18.0 },
+    house: { top: 40.8, left: 16.0 },
+    place: { top: 40.8, left: 54.0 },
+    street: { top: 43.5, left: 14.0 },
+    post: { top: 43.5, left: 54.0 },
+    district: { top: 46.2, left: 16.0 },
+    pin: { top: 46.2, left: 54.0 },
+    email: { top: 48.8, left: 14.0 },
     course: { top: 54.1, left: 10.0 },
     registerNo: { top: 54.1, left: 52.0 },
     monthOfPassing: { top: 56.8, left: 18.0 },
     yearOfPassing: { top: 56.8, left: 52.5 },
-    percentage: { top: 59.5, left: 20.5 },
+    percentage: { top: 59.5, left: 22.5 },
     board: { top: 59.5, left: 43.0 },
     lastInstitution: { top: 62.2, left: 49.0 },
     fatherMobile: { top: 69.8, left: 6.7 },
@@ -196,12 +196,12 @@ export default function PrintView() {
       top: `${pos.top}%`,
       left: `${pos.left}%`,
       transform: 'translateY(-50%)',
-      fontFamily: 'Calibri, "Calibri", Calibri, Arial, sans-serif',
-      fontSize: '12pt',
-      fontWeight: '700',
+      fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif',
+      fontSize: '11.5pt',
+      fontWeight: '400',
       color: '#000',
       whiteSpace: 'nowrap',
-      lineHeight: 1,
+      lineHeight: 0.7,
       zIndex: 2,
       ...style,
     }
@@ -256,13 +256,13 @@ export default function PrintView() {
           </Field>
 
           {/* ── ADHAAR CARD NUMBER — 3 cells, left-aligned ── */}
-          <Field fieldId="adhaar1" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar1" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.2em' }}>
             {aa1}
           </Field>
-          <Field fieldId="adhaar2" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar2" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.2em' }}>
             {aa2}
           </Field>
-          <Field fieldId="adhaar3" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar3" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.2em' }}>
             {aa3}
           </Field>
 
@@ -301,7 +301,7 @@ export default function PrintView() {
           {/* DISTRICT */}
           <Field fieldId="district">{V(data.district)}</Field>
           {/* PIN */}
-          <Field fieldId="pin" style={{ fontFamily:'"Courier New", Courier, monospace', letterSpacing:'0.1em' }}>
+          <Field fieldId="pin" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.1em' }}>
             {V(data.pin)}
           </Field>
 
@@ -313,7 +313,7 @@ export default function PrintView() {
           {/* COURSE */}
           <Field fieldId="course" style={{ width: '31.1%', textAlign: 'center' }}>{V(data.course)}</Field>
           {/* REGISTER NO */}
-          <Field fieldId="registerNo" style={{ fontFamily:'"Courier New", Courier, monospace', width: '29.2%', textAlign: 'center' }}>{V(data.registerNo)}</Field>
+          <Field fieldId="registerNo" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', width: '29.2%', textAlign: 'center' }}>{V(data.registerNo)}</Field>
 
           {/* MONTH OF PASSING */}
           <Field fieldId="monthOfPassing" style={{ width: '21.1%', textAlign: 'center' }}>{V(data.monthOfPassing)}</Field>
@@ -335,19 +335,19 @@ export default function PrintView() {
           {/* ══════════ CONTACT NUMBERS (MOBILE) ══════════ */}
           <Field fieldId="fatherMobile" style={{
             width: '29%', textAlign: 'center',
-            fontFamily: '"Courier New", Courier, monospace', letterSpacing: '0.07em',
+            fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.07em',
           }}>
             {V(data.fatherMobile)}
           </Field>
           <Field fieldId="motherMobile" style={{
             width: '29%', textAlign: 'center',
-            fontFamily: '"Courier New", Courier, monospace', letterSpacing: '0.07em',
+            fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.07em',
           }}>
             {V(data.motherMobile)}
           </Field>
           <Field fieldId="ownMobile" style={{
             width: '29%', textAlign: 'center',
-            fontFamily: '"Courier New", Courier, monospace', letterSpacing: '0.07em',
+            fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.07em',
           }}>
             {V(data.ownMobile)}
           </Field>

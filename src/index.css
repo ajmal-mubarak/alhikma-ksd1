@@ -214,7 +214,7 @@ html, body {
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 12px;
-  font-family: 'Calibri', Calibri, Arial, sans-serif;
+  font-family: 'Arial Rounded MT Bold', 'Arial Rounded MT', Arial, sans-serif;
   font-weight: 700;
   color: var(--text);
   background: #f9fbfd;
@@ -1050,7 +1050,7 @@ html, body {
 .print-value {
   position: absolute;
   z-index: 2;
-  font-family: 'Calibri', Calibri, Arial, sans-serif;
+  font-family: 'Arial Rounded MT Bold', 'Arial Rounded MT', Arial, sans-serif;
   font-size: 12pt;
   font-weight: 700;
   color: #000;
