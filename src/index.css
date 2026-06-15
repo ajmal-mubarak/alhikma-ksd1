@@ -213,8 +213,9 @@ html, body {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
-  font-size: 0.95rem;
-  font-family: var(--font);
+  font-size: 14px;
+  font-family: 'Calibri', Calibri, Arial, sans-serif;
+  font-weight: 700;
   color: var(--text);
   background: #f9fbfd;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -1049,8 +1050,8 @@ html, body {
 .print-value {
   position: absolute;
   z-index: 2;
-  font-family: 'Arial', Helvetica, sans-serif;
-  font-size: 10pt;
+  font-family: 'Calibri', Calibri, Arial, sans-serif;
+  font-size: 14pt;
   font-weight: 700;
   color: #000;
   white-space: nowrap;
