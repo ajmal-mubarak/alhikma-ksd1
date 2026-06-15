@@ -124,7 +124,7 @@ export default function PrintView() {
     post: { top: 43.5, left: 54.0 },
     district: { top: 46.2, left: 16.0 },
     pin: { top: 46.2, left: 54.0 },
-    email: { top: 48.8, left: 14.0 },
+    email: { top: 48.8, left: 13.5 },
     course: { top: 54.1, left: 10.0 },
     registerNo: { top: 54.1, left: 52.0 },
     monthOfPassing: { top: 56.8, left: 18.0 },
@@ -202,6 +202,7 @@ export default function PrintView() {
       color: '#000',
       whiteSpace: 'nowrap',
       lineHeight: 0.7,
+      textTransform: 'uppercase',
       zIndex: 2,
       ...style,
     }
