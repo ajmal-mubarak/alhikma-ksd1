@@ -201,7 +201,7 @@ export default function PrintView() {
       fontWeight: '400',
       color: '#000',
       whiteSpace: 'nowrap',
-      lineHeight: 0.7,
+      lineHeight: 0.8,
       textTransform: 'uppercase',
       zIndex: 2,
       ...style,
