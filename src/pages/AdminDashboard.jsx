@@ -56,7 +56,9 @@ export default function AdminDashboard() {
       a.refNo?.toLowerCase().includes(q) ||
       a.course?.toLowerCase().includes(q) ||
       a.district?.toLowerCase().includes(q) ||
-      a.ownMobile?.includes(q)
+      a.ownMobile?.includes(q) ||
+      a.fatherMobile?.includes(q) ||
+      a.motherMobile?.includes(q)
     )
   })
 
@@ -182,7 +184,22 @@ export default function AdminDashboard() {
                         <div style={{ fontSize: '0.78rem', color: '#999' }}>{a.fatherName ? `S/o D/o ${a.fatherName}` : ''}</div>
                       </td>
                       <td>{a.course || '—'}</td>
-                      <td>{a.ownMobile || '—'}</td>
+                      <td>
+                        {(a.fatherMobile || a.motherMobile) && (
+                          <div style={{ fontSize: '0.78rem', color: '#555', marginBottom: 2, fontWeight: 600 }}>
+                            <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              {a.fatherMobile ? 'Father' : 'Mother'}:{' '}
+                            </span>
+                            {a.fatherMobile || a.motherMobile}
+                          </div>
+                        )}
+                        <div style={{ fontWeight: 600 }}>
+                          <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            Own:{' '}
+                          </span>
+                          {a.ownMobile || '—'}
+                        </div>
+                      </td>
                       <td>{a.district || '—'}</td>
                       <td style={{ fontSize: '0.8rem', color: '#888' }}>
                         {new Date(a.submittedAt).toLocaleDateString('en-IN-u-nu-latn', {
