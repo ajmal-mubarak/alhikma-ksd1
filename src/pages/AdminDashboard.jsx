@@ -185,19 +185,19 @@ export default function AdminDashboard() {
                       </td>
                       <td>{a.course || '—'}</td>
                       <td>
-                        {(a.fatherMobile || a.motherMobile) && (
-                          <div style={{ fontSize: '0.78rem', color: '#555', marginBottom: 2, fontWeight: 600 }}>
-                            <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                              {a.fatherMobile ? 'Father' : 'Mother'}:{' '}
-                            </span>
-                            {a.fatherMobile || a.motherMobile}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <div style={{ fontSize: '0.78rem' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Father: </span>
+                            <span style={{ fontWeight: 600, color: a.fatherMobile ? '#333' : '#ccc' }}>{a.fatherMobile || '—'}</span>
                           </div>
-                        )}
-                        <div style={{ fontWeight: 600 }}>
-                          <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                            Own:{' '}
-                          </span>
-                          {a.ownMobile || '—'}
+                          <div style={{ fontSize: '0.78rem' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mother: </span>
+                            <span style={{ fontWeight: 600, color: a.motherMobile ? '#333' : '#ccc' }}>{a.motherMobile || '—'}</span>
+                          </div>
+                          <div style={{ fontSize: '0.78rem' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Own: </span>
+                            <span style={{ fontWeight: 600, color: a.ownMobile ? '#1a5276' : '#ccc' }}>{a.ownMobile || '—'}</span>
+                          </div>
                         </div>
                       </td>
                       <td>{a.district || '—'}</td>
