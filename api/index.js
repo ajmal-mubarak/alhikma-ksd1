@@ -39,6 +39,7 @@ function toCamel(row) {
     post: row.post || '',
     district: row.district || '',
     pin: row.pin || '',
+    bloodgroup: row.bloodgroup || row.blood_group || '',
     email: row.email || '',
     course: row.course || '',
     registerNo: row.register_no || '',
@@ -118,7 +119,7 @@ app.post('/api/admissions', async (req, res) => {
   const query = `
     INSERT INTO admissions (
       id, ref_no, name, adhaar_card, father_name, mother_name, age, dob, sex,
-      house, place, street, post, district, pin, email, course, register_no,
+      house, place, street, post, district, pin, email, bloodgroup, course, register_no,
       month_of_passing, year_of_passing, percentage, board, last_institution,
       father_mobile, mother_mobile, own_mobile, submitted_at,
       admission_no, enrollment_no, class_admitted, date_of_admission,
@@ -126,9 +127,9 @@ app.post('/api/admissions', async (req, res) => {
       first_term, second_term, third_term
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9,
-      $10, $11, $12, $13, $14, $15, $16, $17, $18,
-      $19, $20, $21, $22, $23, $24, $25, $26, $27,
-      $28, $29, $30, $31, $32, $33, $34, $35, $36, $37
+      $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,
+      $20, $21, $22, $23, $24, $25, $26, $27, $28,
+      $29, $30, $31, $32, $33, $34, $35, $36, $37, $38
     ) RETURNING *
   `;
 
@@ -149,6 +150,7 @@ app.post('/api/admissions', async (req, res) => {
     data.district,
     data.pin || null,
     data.email || null,
+    data.bloodgroup || null,
     data.course,
     data.registerNo || null,
     data.monthOfPassing || null,
@@ -207,13 +209,13 @@ app.put('/api/admissions/:id', async (req, res) => {
   const query = `
     UPDATE admissions SET
       ref_no = $1, name = $2, adhaar_card = $3, father_name = $4, mother_name = $5, age = $6, dob = $7, sex = $8,
-      house = $9, place = $10, street = $11, post = $12, district = $13, pin = $14, email = $15,
-      course = $16, register_no = $17, month_of_passing = $18, year_of_passing = $19, percentage = $20,
-      board = $21, last_institution = $22, father_mobile = $23, mother_mobile = $24, own_mobile = $25,
-      admission_no = $26, enrollment_no = $27, class_admitted = $28, date_of_admission = $29,
-      certificates_received = $30, admission_fee = $31, miscellaneous = $32,
-      first_term = $33, second_term = $34, third_term = $35
-    WHERE id = $36
+      house = $9, place = $10, street = $11, post = $12, district = $13, pin = $14, email = $15, bloodgroup = $16,
+      course = $17, register_no = $18, month_of_passing = $19, year_of_passing = $20, percentage = $21,
+      board = $22, last_institution = $23, father_mobile = $24, mother_mobile = $25, own_mobile = $26,
+      admission_no = $27, enrollment_no = $28, class_admitted = $29, date_of_admission = $30,
+      certificates_received = $31, admission_fee = $32, miscellaneous = $33,
+      first_term = $34, second_term = $35, third_term = $36
+    WHERE id = $37
     RETURNING *
   `;
 
@@ -233,6 +235,7 @@ app.put('/api/admissions/:id', async (req, res) => {
     data.district ?? null,
     data.pin ?? null,
     data.email ?? null,
+    data.bloodgroup ?? null,
     data.course ?? null,
     data.registerNo ?? null,
     data.monthOfPassing ?? null,

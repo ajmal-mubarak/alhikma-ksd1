@@ -108,48 +108,49 @@ export default function PrintView() {
   const didAutoPrint = useRef(false)
 
   const [coords, setCoords] = useState({
-    name: { top: 23.9, left: 36.0 },
-    adhaar1: { top: 27.1, left: 37.5 },
-    adhaar2: { top: 27.1, left: 57.5 },
-    adhaar3: { top: 27.1, left: 78.5 },
-    fatherName: { top: 30.0, left: 25.0 },
-    motherName: { top: 32.6, left: 25.0 },
-    age: { top: 35.4, left: 13.0 },
-    dob: { top: 35.4, left: 41.0 },
-    sexMale: { top: 35.4, left: 78 },
-    sexFemale: { top: 35.4, left: 87.8 },
-    house: { top: 40.8, left: 16.0 },
-    place: { top: 40.8, left: 54.0 },
-    street: { top: 43.5, left: 14.0 },
-    post: { top: 43.5, left: 54.0 },
-    district: { top: 46.2, left: 16.0 },
-    pin: { top: 46.2, left: 54.0 },
-    email: { top: 48.8, left: 13.5 },
-    course: { top: 54.1, left: 10.0 },
-    registerNo: { top: 54.1, left: 52.0 },
-    monthOfPassing: { top: 56.8, left: 18.0 },
-    yearOfPassing: { top: 56.8, left: 52.5 },
-    percentage: { top: 59.5, left: 22.5 },
-    board: { top: 59.5, left: 43.0 },
-    lastInstitution: { top: 62.2, left: 49.0 },
-    fatherMobile: { top: 69.8, left: 6.7 },
-    motherMobile: { top: 69.8, left: 30.8 },
-    ownMobile: { top: 69.8, left: 60.5 },
-    admissionNo: { top: 76.3, left: 28.0 },
-    enrollmentNo: { top: 76.3, left: 65.5 },
-    classAdmitted: { top: 79.4, left: 28.0 },
-    dateOfAdmission: { top: 79.4, left: 68.5 },
-    certificatesReceived: { top: 82.6, left: 33.5 },
-    feeAdmission: { top: 87.4, left: 19.2 },
-    feeMiscellaneous: { top: 87.4, left: 34.3 },
-    feeFirstTerm: { top: 87.4, left: 45.3 },
-    feeSecondTerm: { top: 87.4, left: 58.8 },
-    feeThirdTerm: { top: 87.4, left: 71.3 }
+    name: { top: 27.6, left: 36.0 },
+    adhaar1: { top: 30.8, left: 37.5 },
+    adhaar2: { top: 30.8, left: 57.5 },
+    adhaar3: { top: 30.8, left: 78.5 },
+    fatherName: { top: 33.4, left: 25.0 },
+    motherName: { top: 35.8, left: 25.0 },
+    age: { top: 38.6, left: 13.0 },
+    dob: { top: 38.6, left: 41.0 },
+    sexMale: { top: 38.6, left: 78 },
+    sexFemale: { top: 38.6, left: 88.7 },
+    house: { top: 43.8, left: 16.0 },
+    place: { top: 43.8, left: 54.0 },
+    street: { top: 46.3, left: 16.0 },
+    post: { top: 46.3, left: 54.0 },
+    district: { top: 49.0, left: 16.0 },
+    pin: { top: 49.0, left: 54.0 },
+    email: { top: 51.3, left: 13.5 },
+    bloodgroup: { top: 51.3, left: 54.5 },
+    course: { top: 56.2, left: 10.0 },
+    registerNo: { top: 56.2, left: 52.0 },
+    monthOfPassing: { top: 58.8, left: 18.0 },
+    yearOfPassing: { top: 58.8, left: 52.5 },
+    percentage: { top: 61.3, left: 22.5 },
+    board: { top: 61.3, left: 50.0 },
+    lastInstitution: { top: 64.0, left: 49.0 },
+    fatherMobile: { top: 71.3, left: 6.7 },
+    motherMobile: { top: 71.3, left: 30.8 },
+    ownMobile: { top: 71.3, left: 60.5 },
+    admissionNo: { top: 76.8, left: 28.0 },
+    enrollmentNo: { top: 76.8, left: 65.5 },
+    classAdmitted: { top: 79.8, left: 28.0 },
+    dateOfAdmission: { top: 79.8, left: 68.5 },
+    certificatesReceived: { top: 82.8, left: 33.5 },
+    feeAdmission: { top: 88.2, left: 18.2 },
+    feeMiscellaneous: { top: 88.2, left: 34.1 },
+    feeFirstTerm: { top: 88.2, left: 45.3 },
+    feeSecondTerm: { top: 88.2, left: 59.1 },
+    feeThirdTerm: { top: 88.2, left: 71.9 }
   })
 
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       try {
         const res = await fetch(`/api/admissions/${id}`)
         if (!res.ok) { setNotFound(true); return }
@@ -166,20 +167,24 @@ export default function PrintView() {
   }, [data, searchParams])
 
   if (notFound) return (
-    <div style={{ display:'flex', flexDirection:'column', alignItems:'center',
-                  justifyContent:'center', minHeight:'100vh', background:'#f0f4f8', gap:16 }}>
-      <div style={{ fontSize:'4rem' }}>📋</div>
-      <h2 style={{ color:'#1a5c5c' }}>Admission Not Found</h2>
-      <Link to="/admin" style={{ padding:'10px 24px', textDecoration:'none',
-                                 background:'#1a5c5c', color:'#fff', borderRadius:8 }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', minHeight: '100vh', background: '#f0f4f8', gap: 16
+    }}>
+      <div style={{ fontSize: '4rem' }}>📋</div>
+      <h2 style={{ color: '#1a5c5c' }}>Admission Not Found</h2>
+      <Link to="/admin" style={{
+        padding: '10px 24px', textDecoration: 'none',
+        background: '#1a5c5c', color: '#fff', borderRadius: 8
+      }}>
         ← Back to Admin
       </Link>
     </div>
   )
 
   if (!data) return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh' }}>
-      <p style={{ color:'#888', fontSize:'1.2rem' }}>⏳ Loading…</p>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <p style={{ color: '#888', fontSize: '1.2rem' }}>⏳ Loading…</p>
     </div>
   )
 
@@ -221,7 +226,7 @@ export default function PrintView() {
       <div className="print-toolbar">
         <div>
           <h2>📄 {data.name || 'Admission Form'}</h2>
-          <p style={{ fontSize:'0.78rem', color:'#888', marginTop:3 }}>
+          <p style={{ fontSize: '0.78rem', color: '#888', marginTop: 3 }}>
             Ref: {data.refNo} · Submitted: {formatDate(data.submittedAt)}
           </p>
         </div>
@@ -257,13 +262,13 @@ export default function PrintView() {
           </Field>
 
           {/* ── ADHAAR CARD NUMBER — 3 cells, left-aligned ── */}
-          <Field fieldId="adhaar1" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar1" style={{ fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.2em' }}>
             {aa1}
           </Field>
-          <Field fieldId="adhaar2" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar2" style={{ fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.2em' }}>
             {aa2}
           </Field>
-          <Field fieldId="adhaar3" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.2em' }}>
+          <Field fieldId="adhaar3" style={{ fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.2em' }}>
             {aa3}
           </Field>
 
@@ -281,10 +286,10 @@ export default function PrintView() {
 
           {/* ── SEX (tick inside the checkbox square) ── */}
           {data.sex === 'Male' && (
-            <Field fieldId="sexMale" style={{ width: '2.4%', textAlign: 'center', fontSize:'11pt', fontWeight: 900 }}>✓</Field>
+            <Field fieldId="sexMale" style={{ width: '2.4%', textAlign: 'center', fontSize: '11pt', fontWeight: 900 }}>✓</Field>
           )}
           {data.sex === 'Female' && (
-            <Field fieldId="sexFemale" style={{ width: '2.5%', textAlign: 'center', fontSize:'11pt', fontWeight: 900 }}>✓</Field>
+            <Field fieldId="sexFemale" style={{ width: '2.5%', textAlign: 'center', fontSize: '11pt', fontWeight: 900 }}>✓</Field>
           )}
 
           {/* ══════════ PERMANENT ADDRESS ══════════ */}
@@ -302,19 +307,21 @@ export default function PrintView() {
           {/* DISTRICT */}
           <Field fieldId="district">{V(data.district)}</Field>
           {/* PIN */}
-          <Field fieldId="pin" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing:'0.1em' }}>
+          <Field fieldId="pin" style={{ fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', letterSpacing: '0.1em' }}>
             {V(data.pin)}
           </Field>
 
           {/* EMAIL */}
           <Field fieldId="email">{V(data.email)}</Field>
+          {/* BLOOD GROUP */}
+          <Field fieldId="bloodgroup">{V(data.bloodgroup)}</Field>
 
           {/* ══════════ QUALIFICATION DETAILS ══════════ */}
 
           {/* COURSE */}
           <Field fieldId="course" style={{ width: '31.1%', textAlign: 'center' }}>{V(data.course)}</Field>
           {/* REGISTER NO */}
-          <Field fieldId="registerNo" style={{ fontFamily:'"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', width: '29.2%', textAlign: 'center' }}>{V(data.registerNo)}</Field>
+          <Field fieldId="registerNo" style={{ fontFamily: '"Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif', width: '29.2%', textAlign: 'center' }}>{V(data.registerNo)}</Field>
 
           {/* MONTH OF PASSING */}
           <Field fieldId="monthOfPassing" style={{ width: '21.1%', textAlign: 'center' }}>{V(data.monthOfPassing)}</Field>
@@ -356,34 +363,34 @@ export default function PrintView() {
           {/* ══════════ FOR OFFICE USE ONLY ══════════ */}
 
           {/* ADMISSION NO */}
-          <Field fieldId="admissionNo" style={{ color:'#002244', fontWeight:700 }}>
+          <Field fieldId="admissionNo" style={{ color: '#002244', fontWeight: 700 }}>
             {V(data.admissionNo)}
           </Field>
           {/* ENROLLMENT NO */}
-          <Field fieldId="enrollmentNo" style={{ color:'#002244', fontWeight:700 }}>
+          <Field fieldId="enrollmentNo" style={{ color: '#002244', fontWeight: 700 }}>
             {V(data.enrollmentNo)}
           </Field>
 
           {/* CLASS ADMITTED */}
-          <Field fieldId="classAdmitted" style={{ color:'#002244', fontWeight:700 }}>
+          <Field fieldId="classAdmitted" style={{ color: '#002244', fontWeight: 700 }}>
             {V(data.classAdmitted)}
           </Field>
           {/* DATE OF ADMISSION */}
-          <Field fieldId="dateOfAdmission" style={{ color:'#002244', fontWeight:700 }}>
+          <Field fieldId="dateOfAdmission" style={{ color: '#002244', fontWeight: 700 }}>
             {V(data.dateOfAdmission)}
           </Field>
 
           {/* CERTIFICATES RECEIVED */}
-          <Field fieldId="certificatesReceived" style={{ color:'#002244', fontWeight:700 }}>
+          <Field fieldId="certificatesReceived" style={{ color: '#002244', fontWeight: 700 }}>
             {V(data.certificatesReceived)}
           </Field>
 
           {/* ── FEE CHECKBOXES ── */}
-          {data.admissionFee  && <Field fieldId="feeAdmission" style={{ width: '1.6%', textAlign: 'center', fontSize:'10pt', fontWeight:900, color:'#002244' }}>✓</Field>}
-          {data.miscellaneous && <Field fieldId="feeMiscellaneous" style={{ width: '1.6%', textAlign: 'center', fontSize:'10pt', fontWeight:900, color:'#002244' }}>✓</Field>}
-          {data.firstTerm     && <Field fieldId="feeFirstTerm" style={{ width: '1.6%', textAlign: 'center', fontSize:'10pt', fontWeight:900, color:'#002244' }}>✓</Field>}
-          {data.secondTerm    && <Field fieldId="feeSecondTerm" style={{ width: '1.6%', textAlign: 'center', fontSize:'10pt', fontWeight:900, color:'#002244' }}>✓</Field>}
-          {data.thirdTerm     && <Field fieldId="feeThirdTerm" style={{ width: '1.6%', textAlign: 'center', fontSize:'10pt', fontWeight:900, color:'#002244' }}>✓</Field>}
+          {data.admissionFee && <Field fieldId="feeAdmission" style={{ width: '1.6%', textAlign: 'center', fontSize: '10pt', fontWeight: 900, color: '#002244' }}>✓</Field>}
+          {data.miscellaneous && <Field fieldId="feeMiscellaneous" style={{ width: '1.6%', textAlign: 'center', fontSize: '10pt', fontWeight: 900, color: '#002244' }}>✓</Field>}
+          {data.firstTerm && <Field fieldId="feeFirstTerm" style={{ width: '1.6%', textAlign: 'center', fontSize: '10pt', fontWeight: 900, color: '#002244' }}>✓</Field>}
+          {data.secondTerm && <Field fieldId="feeSecondTerm" style={{ width: '1.6%', textAlign: 'center', fontSize: '10pt', fontWeight: 900, color: '#002244' }}>✓</Field>}
+          {data.thirdTerm && <Field fieldId="feeThirdTerm" style={{ width: '1.6%', textAlign: 'center', fontSize: '10pt', fontWeight: 900, color: '#002244' }}>✓</Field>}
 
         </div>
       </div>

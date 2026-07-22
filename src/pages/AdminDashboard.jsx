@@ -56,6 +56,7 @@ export default function AdminDashboard() {
       a.refNo?.toLowerCase().includes(q) ||
       a.course?.toLowerCase().includes(q) ||
       a.district?.toLowerCase().includes(q) ||
+      a.bloodgroup?.toLowerCase().includes(q) ||
       a.ownMobile?.includes(q) ||
       a.fatherMobile?.includes(q) ||
       a.motherMobile?.includes(q)

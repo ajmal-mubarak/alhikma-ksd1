@@ -6,6 +6,11 @@ const MONTHS = [
   'July','August','September','October','November','December'
 ]
 
+const BLOOD_GROUPS = [
+  'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-',
+  'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve', 'AB+ve', 'AB-ve'
+]
+
 function validateForm(data) {
   // Relaxed validation for admin edits: allow partial updates
   const errors = {}
@@ -459,10 +464,17 @@ export default function EditAdmission() {
                 <input id="pin" name="pin" type="text" value={form.pin || ''} onChange={handleChange} placeholder="6-digit PIN" maxLength={6} />
               </div>
             </div>
-            <div className="field-grid grid-1" style={{ marginTop: 16 }}>
+            <div className="field-grid grid-2" style={{ marginTop: 16 }}>
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
                 <input id="email" name="email" type="email" value={form.email || ''} onChange={handleChange} placeholder="example@email.com" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="bloodgroup">Blood Group</label>
+                <select id="bloodgroup" name="bloodgroup" value={form.bloodgroup || ''} onChange={handleChange}>
+                  <option value="">Select Blood Group</option>
+                  {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                </select>
               </div>
             </div>
           </div>

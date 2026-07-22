@@ -15,6 +15,7 @@ const initialForm = {
   post: '',
   district: '',
   pin: '',
+  bloodgroup: '',
   email: '',
   course: '',
   registerNo: '',
@@ -29,8 +30,13 @@ const initialForm = {
 }
 
 const MONTHS = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December'
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+]
+
+const BLOOD_GROUPS = [
+  'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-',
+  'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve', 'AB+ve', 'AB-ve'
 ]
 
 function validateForm(data) {
@@ -89,6 +95,7 @@ export default function AdmissionForm() {
     post: 'Post office',
     district: 'District',
     pin: '6-digit PIN',
+    bloodgroup: 'Blood Group (e.g. O+ve,A-ve,B+ve,AB+ve)',
     email: 'example@email.com',
     course: 'e.g. Plus Two, Degree',
     registerNo: 'Exam register number',
@@ -188,7 +195,7 @@ export default function AdmissionForm() {
         <header className="header-bar">
           <div className="header-logo-area">
             <div className="header-emblem">
-              <img src="/logo.png" alt="Al Hikma" style={{width:'100%',height:'100%',objectFit:'contain',padding:'4px'}} />
+              <img src="/logo.png" alt="Al Hikma" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
             </div>
             <div className="header-text">
               <h1>Al Hikma Women's College</h1>
@@ -224,7 +231,7 @@ export default function AdmissionForm() {
       <header className="header-bar">
         <div className="header-logo-area">
           <div className="header-emblem">
-            <img src="/logo.png" alt="Al Hikma" style={{width:'100%',height:'100%',objectFit:'contain',padding:'4px'}} />
+            <img src="/logo.png" alt="Al Hikma" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
           </div>
           <div className="header-text">
             <h1>Al Hikma Women's College</h1>
@@ -234,11 +241,11 @@ export default function AdmissionForm() {
       </header>
 
       <div className="form-page-content">
-          <div className="form-intro fade-in">
+        <div className="form-intro fade-in">
           <div className="form-badge">Academic Year 2026</div>
           <h2>Admission Application Form</h2>
-          <p style={{color:'rgba(255,255,255,0.6)', fontSize:'0.88rem', marginTop:4}}>Al Hikma Women's College · Indira Nagar, Kasaragod – 671 541</p>
-          <p style={{marginTop:8}}>All fields are optional; provide information as applicable.</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', marginTop: 4 }}>Al Hikma Women's College · Indira Nagar, Kasaragod – 671 541</p>
+          <p style={{ marginTop: 8 }}>All fields are optional; provide information as applicable.</p>
         </div>
 
         <form className="form-card fade-in" onSubmit={handleSubmit} noValidate>
@@ -250,7 +257,7 @@ export default function AdmissionForm() {
           <div className="form-section">
             <div className="field-grid grid-1">
               <div className={fieldClass('name')}>
-                <label htmlFor="name">Name of Applicant (in Capital Letters) <span style={{color:'#ff8080'}}>*</span></label>
+                <label htmlFor="name">Name of Applicant (in Capital Letters) <span style={{ color: '#ff8080' }}>*</span></label>
                 <input
                   id="name"
                   name="name"
@@ -262,8 +269,8 @@ export default function AdmissionForm() {
                   className={errors.name ? 'error' : ''}
                   autoComplete="name"
                 />
-                  {helperHints.name && <div className="helper-text">{helperHints.name}</div>}
-                  {errors.name && <span className="error-msg">{errors.name}</span>}
+                {helperHints.name && <div className="helper-text">{helperHints.name}</div>}
+                {errors.name && <span className="error-msg">{errors.name}</span>}
               </div>
             </div>
 
@@ -287,7 +294,7 @@ export default function AdmissionForm() {
 
             <div className="field-grid grid-2" style={{ marginTop: 16 }}>
               <div className={fieldClass('fatherName')}>
-                <label htmlFor="fatherName">Father's Name <span style={{color:'#ff8080'}}>*</span></label>
+                <label htmlFor="fatherName">Father's Name <span style={{ color: '#ff8080' }}>*</span></label>
                 <input
                   id="fatherName"
                   name="fatherName"
@@ -469,7 +476,7 @@ export default function AdmissionForm() {
                 {errors.pin && <span className="error-msg">{errors.pin}</span>}
               </div>
             </div>
-            <div className="field-grid grid-1" style={{ marginTop: 16 }}>
+            <div className="field-grid grid-2" style={{ marginTop: 16 }}>
               <div className={fieldClass('email')}>
                 <label htmlFor="email">Email Address</label>
                 <input
@@ -483,6 +490,21 @@ export default function AdmissionForm() {
                 />
                 {helperHints.email && <div className="helper-text">{helperHints.email}</div>}
                 {errors.email && <span className="error-msg">{errors.email}</span>}
+              </div>
+              <div className={fieldClass('bloodgroup')}>
+                <label htmlFor="bloodgroup">Blood Group</label>
+                <select
+                  id="bloodgroup"
+                  name="bloodgroup"
+                  value={form.bloodgroup}
+                  onChange={handleChange}
+                  className={errors.bloodgroup ? 'error' : ''}
+                >
+                  <option value="">Select Blood Group</option>
+                  {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                </select>
+                {helperHints.bloodgroup && <div className="helper-text">{helperHints.bloodgroup}</div>}
+                {errors.bloodgroup && <span className="error-msg">{errors.bloodgroup}</span>}
               </div>
             </div>
           </div>
@@ -597,8 +619,8 @@ export default function AdmissionForm() {
                   placeholder="Name of school / college"
                   className={errors.lastInstitution ? 'error' : ''}
                 />
-                  {helperHints.lastInstitution && <div className="helper-text">{helperHints.lastInstitution}</div>}
-                  {errors.lastInstitution && <span className="error-msg">{errors.lastInstitution}</span>}
+                {helperHints.lastInstitution && <div className="helper-text">{helperHints.lastInstitution}</div>}
+                {errors.lastInstitution && <span className="error-msg">{errors.lastInstitution}</span>}
               </div>
             </div>
           </div>
