@@ -125,7 +125,7 @@ export default function PrintView() {
     district: { top: 49.0, left: 16.0 },
     pin: { top: 49.0, left: 54.0 },
     email: { top: 51.3, left: 13.5 },
-    bloodgroup: { top: 51.3, left: 52.0 },
+    bloodgroup: { top: 51.3, left: 61.0 },
     course: { top: 56.2, left: 10.0 },
     registerNo: { top: 56.2, left: 52.0 },
     monthOfPassing: { top: 58.8, left: 18.0 },
