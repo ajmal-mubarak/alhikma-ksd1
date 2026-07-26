@@ -1,15 +1,19 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import rateLimit from 'express-rate-limit';
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig(); // loads .env locally; no-op on Vercel (env vars set in dashboard)
 
 const { Pool } = pg;
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Required for Vercel (runs behind a proxy)
+app.set('trust proxy', 1);
 
 // ── CORS ────────────────────────────────────────────────────────────────────
 const allowedOrigins = [
@@ -34,14 +38,25 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// ── RATE LIMITING ─────────────────────────────────────────────────────────────
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
-  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// ── SIMPLE RATE LIMITER (login only) ─────────────────────────────────────────
+const loginAttempts = new Map();
+function loginLimiter(req, res, next) {
+  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000; // 15 minutes
+  const max = 5;
+  const entry = loginAttempts.get(ip) || { count: 0, resetAt: now + windowMs };
+  if (now > entry.resetAt) {
+    entry.count = 0;
+    entry.resetAt = now + windowMs;
+  }
+  entry.count++;
+  loginAttempts.set(ip, entry);
+  if (entry.count > max) {
+    return res.status(429).json({ error: 'Too many login attempts. Please try again in 15 minutes.' });
+  }
+  next();
+}
 
 // ── AUTH MIDDLEWARE ───────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {
