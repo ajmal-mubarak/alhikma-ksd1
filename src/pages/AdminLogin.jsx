@@ -25,7 +25,7 @@ export default function AdminLogin() {
       saveToken(data.token, data.expiresIn);
       navigate('/admin', { replace: true });
     } catch (err) {
-      setError(err?.message || 'Network error. Please check your connection.');
+      setError(err?.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -34,205 +34,304 @@ export default function AdminLogin() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap');
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .lp-wrap {
+        .al-root {
           min-height: 100vh;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #eef0f4;
-          font-family: 'Inter', 'Segoe UI', sans-serif;
-          padding: 16px;
+          font-family: 'Inter', system-ui, sans-serif;
+          background: #f0f2f5;
+          padding: 20px;
         }
 
-        .lp-card {
-          background: #fff;
-          border-radius: 14px;
-          box-shadow: 0 4px 32px rgba(0,0,0,0.10);
-          padding: 48px 40px 40px;
+        /* Card */
+        .al-card {
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 8px 48px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
           width: 100%;
-          max-width: 360px;
+          max-width: 400px;
+          padding: 0;
+          overflow: hidden;
+        }
+
+        /* Top teal strip */
+        .al-header {
+          background: linear-gradient(135deg, #0d5c4a 0%, #1a8a6e 100%);
+          padding: 36px 40px 28px;
           display: flex;
           flex-direction: column;
           align-items: center;
         }
 
-        /* Logo circle */
-        .lp-avatar {
-          width: 86px;
-          height: 86px;
+        .al-logo-ring {
+          width: 90px;
+          height: 90px;
           border-radius: 50%;
-          background: #2e7fc1;
+          background: rgba(255,255,255,0.15);
+          border: 3px solid rgba(255,255,255,0.35);
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 20px;
-          overflow: hidden;
-          box-shadow: 0 4px 16px rgba(46,127,193,0.25);
+          margin-bottom: 16px;
+          backdrop-filter: blur(4px);
         }
-        .lp-avatar img {
-          width: 100%;
-          height: 100%;
+        .al-logo-ring img {
+          width: 68px;
+          height: 68px;
           object-fit: contain;
-          padding: 10px;
           filter: brightness(0) invert(1);
         }
 
-        .lp-title {
-          font-size: 1.15rem;
-          font-weight: 600;
-          color: #1a1a2e;
-          margin-bottom: 26px;
-          letter-spacing: 0.01em;
+        .al-heading {
+          color: #fff;
+          font-size: 1.25rem;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+          margin-bottom: 3px;
+        }
+        .al-sub {
+          color: rgba(255,255,255,0.65);
+          font-size: 0.78rem;
+          font-weight: 400;
+          letter-spacing: 0.02em;
+        }
+
+        /* Form body */
+        .al-body {
+          padding: 32px 36px 36px;
         }
 
         /* Error */
-        .lp-error {
-          width: 100%;
-          background: #fff0f0;
-          border: 1px solid #fca5a5;
-          border-radius: 7px;
-          padding: 9px 13px;
-          color: #b91c1c;
+        .al-err {
+          background: #fef2f2;
+          border-left: 3px solid #ef4444;
+          border-radius: 8px;
+          padding: 10px 14px;
+          color: #dc2626;
           font-size: 0.82rem;
-          margin-bottom: 14px;
-          text-align: center;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          gap: 7px;
         }
 
-        /* Input group */
-        .lp-field {
-          width: 100%;
-          position: relative;
-          margin-bottom: 14px;
+        /* Fields */
+        .al-field {
+          margin-bottom: 18px;
         }
-        .lp-input {
+        .al-label {
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 7px;
+        }
+        .al-input-wrap {
+          position: relative;
+        }
+        .al-input {
           width: 100%;
-          padding: 11px 40px 11px 14px;
-          border: 1.5px solid #d1d5db;
-          border-radius: 7px;
-          font-size: 0.93rem;
+          padding: 13px 44px 13px 16px;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          font-size: 0.94rem;
           color: #111827;
-          background: #fff;
+          background: #fafafa;
           outline: none;
           font-family: inherit;
-          transition: border-color 0.15s, box-shadow 0.15s;
+          transition: all 0.18s ease;
         }
-        .lp-input::placeholder { color: #9ca3af; }
-        .lp-input:focus {
-          border-color: #2e7fc1;
-          box-shadow: 0 0 0 3px rgba(46,127,193,0.12);
+        .al-input::placeholder { color: #c4c8cf; }
+        .al-input:focus {
+          border-color: #1a8a6e;
+          background: #fff;
+          box-shadow: 0 0 0 4px rgba(26,138,110,0.10);
         }
-        .lp-icon {
+
+        .al-suffix {
           position: absolute;
-          right: 13px;
+          right: 14px;
           top: 50%;
           transform: translateY(-50%);
-          color: #9ca3af;
-          font-size: 0.95rem;
-          pointer-events: none;
-          line-height: 1;
+          display: flex;
+          align-items: center;
+          color: #d1d5db;
         }
-        .lp-toggle {
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
+        .al-eye-btn {
           background: none;
           border: none;
           cursor: pointer;
+          padding: 0;
           color: #9ca3af;
-          font-size: 0.85rem;
-          padding: 4px 6px;
-          font-family: inherit;
-          font-weight: 600;
+          display: flex;
+          align-items: center;
           transition: color 0.15s;
-          line-height: 1;
         }
-        .lp-toggle:hover { color: #374151; }
+        .al-eye-btn:hover { color: #374151; }
 
-        /* Button */
-        .lp-btn {
+        /* Submit */
+        .al-btn {
           width: 100%;
-          padding: 12px;
-          background: #2e7fc1;
+          padding: 14px;
+          background: linear-gradient(135deg, #0d5c4a 0%, #1a8a6e 100%);
           color: #fff;
           border: none;
-          border-radius: 7px;
-          font-size: 0.95rem;
-          font-weight: 600;
-          letter-spacing: 0.08em;
+          border-radius: 10px;
+          font-size: 0.9rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
           cursor: pointer;
           font-family: inherit;
-          margin-top: 4px;
-          transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+          margin-top: 8px;
+          transition: all 0.2s ease;
+          position: relative;
+          overflow: hidden;
         }
-        .lp-btn:hover:not(:disabled) {
-          background: #2569a8;
-          box-shadow: 0 4px 14px rgba(46,127,193,0.3);
+        .al-btn::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: rgba(255,255,255,0);
+          transition: background 0.15s;
         }
-        .lp-btn:active:not(:disabled) { transform: scale(0.99); }
-        .lp-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+        .al-btn:hover:not(:disabled)::after { background: rgba(255,255,255,0.08); }
+        .al-btn:hover:not(:disabled) {
+          box-shadow: 0 6px 20px rgba(13,92,74,0.35);
+          transform: translateY(-1px);
+        }
+        .al-btn:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
+        .al-btn:disabled {
+          background: #d1d5db;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        /* Spinner */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .al-spinner {
+          display: inline-block;
+          width: 14px; height: 14px;
+          border: 2px solid rgba(255,255,255,0.4);
+          border-top-color: #fff;
+          border-radius: 50%;
+          animation: spin 0.7s linear infinite;
+          vertical-align: middle;
+          margin-right: 8px;
+        }
+
+        /* Footer */
+        .al-footer {
+          text-align: center;
+          padding: 16px 36px 24px;
+          font-size: 0.73rem;
+          color: #c4c8cf;
+          letter-spacing: 0.01em;
+          border-top: 1px solid #f3f4f6;
+        }
       `}</style>
 
-      <div className="lp-wrap">
-        <div className="lp-card">
+      <div className="al-root">
+        <div className="al-card">
 
-          {/* Logo circle */}
-          <div className="lp-avatar">
-            <img src="/logo.png" alt="Al Hikma" />
+          {/* Teal header */}
+          <div className="al-header">
+            <div className="al-logo-ring">
+              <img src="/logo.png" alt="Al Hikma" />
+            </div>
+            <div className="al-heading">Admin Log in</div>
+            <div className="al-sub">Al Hikma Women's College · Kasaragod</div>
           </div>
 
-          <h1 className="lp-title">Admin Log in</h1>
+          {/* Form */}
+          <div className="al-body">
+            {error && (
+              <div className="al-err">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+                </svg>
+                {error}
+              </div>
+            )}
 
-          {error && <div className="lp-error">⚠ {error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="al-field">
+                <label className="al-label" htmlFor="al-uid">User ID</label>
+                <div className="al-input-wrap">
+                  <input
+                    id="al-uid"
+                    type="text"
+                    className="al-input"
+                    placeholder="Enter your user ID"
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                    required
+                    autoComplete="username"
+                    autoFocus
+                  />
+                  <span className="al-suffix">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </span>
+                </div>
+              </div>
 
-          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-            {/* Username */}
-            <div className="lp-field">
-              <input
-                id="admin-username"
-                type="text"
-                className="lp-input"
-                placeholder="User ID"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                required
-                autoComplete="username"
-                autoFocus
-              />
-              <span className="lp-icon">👤</span>
-            </div>
+              <div className="al-field">
+                <label className="al-label" htmlFor="al-pw">Password</label>
+                <div className="al-input-wrap">
+                  <input
+                    id="al-pw"
+                    type={showPass ? 'text' : 'password'}
+                    className="al-input"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                  <span className="al-suffix">
+                    <button
+                      type="button"
+                      className="al-eye-btn"
+                      onClick={() => setShowPass(v => !v)}
+                      tabIndex={-1}
+                      aria-label={showPass ? 'Hide password' : 'Show password'}
+                    >
+                      {showPass ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                          <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                          <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      )}
+                    </button>
+                  </span>
+                </div>
+              </div>
 
-            {/* Password */}
-            <div className="lp-field">
-              <input
-                id="admin-password"
-                type={showPass ? 'text' : 'password'}
-                className="lp-input"
-                placeholder="Password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="lp-toggle"
-                onClick={() => setShowPass(v => !v)}
-                tabIndex={-1}
-                aria-label={showPass ? 'Hide' : 'Show'}
-              >
-                {showPass ? 'Off' : 'On'}
+              <button id="al-login-btn" type="submit" className="al-btn" disabled={loading}>
+                {loading && <span className="al-spinner" />}
+                {loading ? 'Signing in…' : 'Login'}
               </button>
-            </div>
+            </form>
+          </div>
 
-            <button id="admin-login-btn" type="submit" className="lp-btn" disabled={loading}>
-              {loading ? 'Please wait…' : 'LOGIN'}
-            </button>
-          </form>
-
+          <div className="al-footer">Powered by Al Hikma Administration System</div>
         </div>
       </div>
     </>
