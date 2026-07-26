@@ -72,19 +72,18 @@ export default function AdminLogin() {
           width: 90px;
           height: 90px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.15);
-          border: 3px solid rgba(255,255,255,0.35);
+          background: #fff;
+          border: 3px solid rgba(255,255,255,0.9);
           display: flex;
           align-items: center;
           justify-content: center;
           margin-bottom: 16px;
-          backdrop-filter: blur(4px);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
         .al-logo-ring img {
-          width: 68px;
-          height: 68px;
+          width: 72px;
+          height: 72px;
           object-fit: contain;
-          filter: brightness(0) invert(1);
         }
 
         .al-heading {
@@ -104,6 +103,7 @@ export default function AdminLogin() {
         /* Form body */
         .al-body {
           padding: 32px 36px 36px;
+          background: #f4f6f8;
         }
 
         /* Error */
@@ -139,11 +139,11 @@ export default function AdminLogin() {
         .al-input {
           width: 100%;
           padding: 13px 44px 13px 16px;
-          border: 1.5px solid #e5e7eb;
+          border: 1.5px solid #e2e5ea;
           border-radius: 10px;
           font-size: 0.94rem;
           color: #111827;
-          background: #fafafa;
+          background: #fff;
           outline: none;
           font-family: inherit;
           transition: all 0.18s ease;
@@ -231,11 +231,12 @@ export default function AdminLogin() {
         /* Footer */
         .al-footer {
           text-align: center;
-          padding: 16px 36px 24px;
+          padding: 14px 36px 22px;
           font-size: 0.73rem;
-          color: #c4c8cf;
+          color: #9ca3af;
           letter-spacing: 0.01em;
-          border-top: 1px solid #f3f4f6;
+          border-top: 1px solid #e9ecef;
+          background: #f4f6f8;
         }
       `}</style>
 
