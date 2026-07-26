@@ -38,8 +38,9 @@ export default function AdminLogin() {
 
       saveToken(data.token, data.expiresIn);
       navigate('/admin', { replace: true });
-    } catch {
-      setError('Network error. Please check your connection and try again.');
+    } catch (err) {
+      console.error('Login fetch error:', err);
+      setError(err?.message || 'Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }

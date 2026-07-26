@@ -15,20 +15,9 @@ const PORT = process.env.PORT || 5000;
 // Required for Vercel (runs behind a proxy)
 app.set('trust proxy', 1);
 
-// ── CORS ────────────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  process.env.ALLOWED_ORIGIN || 'http://localhost:5173',
-  'http://localhost:5173',
-  'http://localhost:4173',
-];
-app.use(cors({
-  origin: (origin, cb) => {
-    // Allow requests with no origin (e.g. mobile apps, curl) only in dev
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error('Not allowed by CORS'));
-  },
-  credentials: true,
-}));
+// ── CORS ──────────────────────────────────────────────────────────────────
+// Allow all origins (security is handled by JWT on all admin routes)
+app.use(cors());
 
 app.use(express.json());
 
