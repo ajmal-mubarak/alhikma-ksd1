@@ -7,7 +7,6 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [attempts, setAttempts] = useState(0);
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
 
@@ -15,27 +14,17 @@ export default function AdminLogin() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-        setError(data.error || 'Invalid credentials');
-        return;
-      }
-
+      if (!res.ok) { setError(data.error || 'Invalid credentials'); return; }
       saveToken(data.token, data.expiresIn);
       navigate('/admin', { replace: true });
     } catch (err) {
-      console.error('Login fetch error:', err);
       setError(err?.message || 'Network error. Please check your connection.');
     } finally {
       setLoading(false);
@@ -45,307 +34,205 @@ export default function AdminLogin() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        .login-page {
+        .lp-wrap {
           min-height: 100vh;
           display: flex;
-          background: #f5f6fa;
+          align-items: center;
+          justify-content: center;
+          background: #eef0f4;
           font-family: 'Inter', 'Segoe UI', sans-serif;
+          padding: 16px;
         }
 
-        /* ── LEFT PANEL ── */
-        .login-left {
-          display: none;
-          flex: 1;
-          background: linear-gradient(160deg, #0d3b35 0%, #1a6b5a 60%, #1e8870 100%);
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          padding: 48px;
-          position: relative;
-          overflow: hidden;
-        }
-        @media (min-width: 900px) {
-          .login-left { display: flex; }
-        }
-        .login-left::before {
-          content: '';
-          position: absolute;
-          width: 400px; height: 400px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.04);
-          top: -80px; left: -80px;
-        }
-        .login-left::after {
-          content: '';
-          position: absolute;
-          width: 300px; height: 300px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.04);
-          bottom: -60px; right: -60px;
-        }
-        .left-logo {
-          width: 160px;
-          filter: brightness(0) invert(1);
-          margin-bottom: 32px;
-          position: relative;
-          z-index: 1;
-        }
-        .left-tagline {
-          color: rgba(255,255,255,0.9);
-          font-size: 1.5rem;
-          font-weight: 700;
-          text-align: center;
-          line-height: 1.4;
-          position: relative;
-          z-index: 1;
-          margin-bottom: 12px;
-        }
-        .left-sub {
-          color: rgba(255,255,255,0.55);
-          font-size: 0.9rem;
-          text-align: center;
-          position: relative;
-          z-index: 1;
-        }
-
-        /* ── RIGHT PANEL ── */
-        .login-right {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 32px 24px;
+        .lp-card {
           background: #fff;
-        }
-
-        .login-card {
+          border-radius: 14px;
+          box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+          padding: 48px 40px 40px;
           width: 100%;
-          max-width: 400px;
-        }
-
-        /* Mobile logo (shown only on small screens) */
-        .mobile-logo {
+          max-width: 360px;
           display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        /* Logo circle */
+        .lp-avatar {
+          width: 86px;
+          height: 86px;
+          border-radius: 50%;
+          background: #2e7fc1;
+          display: flex;
+          align-items: center;
           justify-content: center;
-          margin-bottom: 32px;
-        }
-        .mobile-logo img {
-          width: 130px;
-        }
-        @media (min-width: 900px) {
-          .mobile-logo { display: none; }
-        }
-
-        .login-title {
-          font-size: 1.6rem;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 6px;
-          letter-spacing: -0.02em;
-        }
-        .login-subtitle {
-          font-size: 0.88rem;
-          color: #6b7280;
-          margin-bottom: 32px;
-        }
-
-        .form-group {
           margin-bottom: 20px;
+          overflow: hidden;
+          box-shadow: 0 4px 16px rgba(46,127,193,0.25);
         }
-        .form-label {
-          display: block;
-          font-size: 0.82rem;
+        .lp-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 10px;
+          filter: brightness(0) invert(1);
+        }
+
+        .lp-title {
+          font-size: 1.15rem;
           font-weight: 600;
-          color: #374151;
-          margin-bottom: 7px;
+          color: #1a1a2e;
+          margin-bottom: 26px;
           letter-spacing: 0.01em;
         }
-        .form-input {
+
+        /* Error */
+        .lp-error {
           width: 100%;
-          padding: 11px 14px;
-          border: 1.5px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 0.94rem;
-          color: #111827;
-          background: #fafafa;
-          outline: none;
-          transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-          font-family: inherit;
+          background: #fff0f0;
+          border: 1px solid #fca5a5;
+          border-radius: 7px;
+          padding: 9px 13px;
+          color: #b91c1c;
+          font-size: 0.82rem;
+          margin-bottom: 14px;
+          text-align: center;
         }
-        .form-input:focus {
-          border-color: #1a6b5a;
-          background: #fff;
-          box-shadow: 0 0 0 3px rgba(26,107,90,0.1);
-        }
-        .input-wrap {
+
+        /* Input group */
+        .lp-field {
+          width: 100%;
           position: relative;
+          margin-bottom: 14px;
         }
-        .input-wrap .form-input {
-          padding-right: 44px;
+        .lp-input {
+          width: 100%;
+          padding: 11px 40px 11px 14px;
+          border: 1.5px solid #d1d5db;
+          border-radius: 7px;
+          font-size: 0.93rem;
+          color: #111827;
+          background: #fff;
+          outline: none;
+          font-family: inherit;
+          transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .show-pass-btn {
+        .lp-input::placeholder { color: #9ca3af; }
+        .lp-input:focus {
+          border-color: #2e7fc1;
+          box-shadow: 0 0 0 3px rgba(46,127,193,0.12);
+        }
+        .lp-icon {
           position: absolute;
-          right: 12px; top: 50%;
+          right: 13px;
+          top: 50%;
           transform: translateY(-50%);
-          background: none; border: none;
+          color: #9ca3af;
+          font-size: 0.95rem;
+          pointer-events: none;
+          line-height: 1;
+        }
+        .lp-toggle {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
           cursor: pointer;
           color: #9ca3af;
-          font-size: 1rem;
-          padding: 4px;
-          line-height: 1;
-          transition: color 0.15s;
-        }
-        .show-pass-btn:hover { color: #374151; }
-
-        .error-box {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          background: #fef2f2;
-          border: 1px solid #fecaca;
-          border-radius: 8px;
-          padding: 11px 14px;
-          margin-bottom: 20px;
-          color: #b91c1c;
           font-size: 0.85rem;
-          line-height: 1.5;
+          padding: 4px 6px;
+          font-family: inherit;
+          font-weight: 600;
+          transition: color 0.15s;
+          line-height: 1;
         }
-        .error-icon { flex-shrink: 0; margin-top: 1px; }
+        .lp-toggle:hover { color: #374151; }
 
-        .login-btn {
+        /* Button */
+        .lp-btn {
           width: 100%;
-          padding: 13px;
-          background: #1a6b5a;
+          padding: 12px;
+          background: #2e7fc1;
           color: #fff;
           border: none;
-          border-radius: 8px;
-          font-size: 0.96rem;
+          border-radius: 7px;
+          font-size: 0.95rem;
           font-weight: 600;
+          letter-spacing: 0.08em;
           cursor: pointer;
-          transition: background 0.18s, transform 0.1s, box-shadow 0.18s;
           font-family: inherit;
-          letter-spacing: 0.01em;
           margin-top: 4px;
+          transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
         }
-        .login-btn:hover:not(:disabled) {
-          background: #15594b;
-          box-shadow: 0 4px 12px rgba(26,107,90,0.25);
+        .lp-btn:hover:not(:disabled) {
+          background: #2569a8;
+          box-shadow: 0 4px 14px rgba(46,127,193,0.3);
         }
-        .login-btn:active:not(:disabled) { transform: scale(0.99); }
-        .login-btn:disabled {
-          background: #9ca3af;
-          cursor: not-allowed;
-        }
-
-        .login-footer {
-          text-align: center;
-          margin-top: 32px;
-          padding-top: 24px;
-          border-top: 1px solid #f3f4f6;
-          color: #9ca3af;
-          font-size: 0.78rem;
-        }
-
-        .attempts-warning {
-          font-size: 0.78rem;
-          color: #d97706;
-          margin-top: 6px;
-          text-align: center;
-        }
+        .lp-btn:active:not(:disabled) { transform: scale(0.99); }
+        .lp-btn:disabled { background: #9ca3af; cursor: not-allowed; }
       `}</style>
 
-      <div className="login-page">
-        {/* Left decorative panel */}
-        <div className="login-left">
-          <img src="/logo.png" alt="Al Hikma Logo" className="left-logo" />
-          <div className="left-tagline">Admissions Management</div>
-          <div className="left-sub">Kasaragod · 2026</div>
-        </div>
+      <div className="lp-wrap">
+        <div className="lp-card">
 
-        {/* Right form panel */}
-        <div className="login-right">
-          <div className="login-card">
-            {/* Mobile logo */}
-            <div className="mobile-logo">
-              <img src="/logo.png" alt="Al Hikma Women's College" />
-            </div>
-
-            <h1 className="login-title">Admin Sign In</h1>
-            <p className="login-subtitle">Enter your credentials to access the dashboard</p>
-
-            {/* Error */}
-            {error && (
-              <div className="error-box">
-                <span className="error-icon">⚠️</span>
-                <span>{error}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="admin-username">Username</label>
-                <input
-                  id="admin-username"
-                  type="text"
-                  className="form-input"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  placeholder="Enter username"
-                  required
-                  autoComplete="username"
-                  autoFocus
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label" htmlFor="admin-password">Password</label>
-                <div className="input-wrap">
-                  <input
-                    id="admin-password"
-                    type={showPass ? 'text' : 'password'}
-                    className="form-input"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="Enter password"
-                    required
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    className="show-pass-btn"
-                    onClick={() => setShowPass(v => !v)}
-                    tabIndex={-1}
-                    aria-label={showPass ? 'Hide password' : 'Show password'}
-                  >
-                    {showPass ? '🙈' : '👁'}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                id="admin-login-btn"
-                type="submit"
-                className="login-btn"
-                disabled={loading}
-              >
-                {loading ? 'Signing in…' : 'Sign In →'}
-              </button>
-
-              {attempts >= 3 && (
-                <p className="attempts-warning">
-                  ⚠️ {attempts} failed attempts — account locks after 5
-                </p>
-              )}
-            </form>
-
-            <div className="login-footer">
-              Al Hikma Women's College · Kasaragod
-            </div>
+          {/* Logo circle */}
+          <div className="lp-avatar">
+            <img src="/logo.png" alt="Al Hikma" />
           </div>
+
+          <h1 className="lp-title">Admin Log in</h1>
+
+          {error && <div className="lp-error">⚠ {error}</div>}
+
+          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            {/* Username */}
+            <div className="lp-field">
+              <input
+                id="admin-username"
+                type="text"
+                className="lp-input"
+                placeholder="User ID"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+                autoFocus
+              />
+              <span className="lp-icon">👤</span>
+            </div>
+
+            {/* Password */}
+            <div className="lp-field">
+              <input
+                id="admin-password"
+                type={showPass ? 'text' : 'password'}
+                className="lp-input"
+                placeholder="Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="lp-toggle"
+                onClick={() => setShowPass(v => !v)}
+                tabIndex={-1}
+                aria-label={showPass ? 'Hide' : 'Show'}
+              >
+                {showPass ? 'Off' : 'On'}
+              </button>
+            </div>
+
+            <button id="admin-login-btn" type="submit" className="lp-btn" disabled={loading}>
+              {loading ? 'Please wait…' : 'LOGIN'}
+            </button>
+          </form>
+
         </div>
       </div>
     </>
