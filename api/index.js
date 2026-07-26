@@ -1,26 +1,64 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
 
 const { Pool } = pg;
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// ── CORS ────────────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  process.env.ALLOWED_ORIGIN || 'http://localhost:5173',
+  'http://localhost:5173',
+  'http://localhost:4173',
+];
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (e.g. mobile apps, curl) only in dev
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
 app.use(express.json());
 
-// Database Pool Configuration (using the verified IPv4 pooler connection string)
-const dbUri = 'postgresql://postgres.tsrjjqzgqkvhfpeiwula:alhikma%40123@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres';
+// ── DATABASE ─────────────────────────────────────────────────────────────────
 const pool = new Pool({
-  connectionString: dbUri,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 
-// Helper to map DB snake_case rows to JS camelCase
+// ── RATE LIMITING ─────────────────────────────────────────────────────────────
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// ── AUTH MIDDLEWARE ───────────────────────────────────────────────────────────
+function requireAuth(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
+  if (!token) return res.status(401).json({ error: 'Authentication required' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
+  }
+}
+
+// ── HELPER ───────────────────────────────────────────────────────────────────
 function toCamel(row) {
   if (!row) return null;
   return {
@@ -61,12 +99,65 @@ function toCamel(row) {
     miscellaneous: row.miscellaneous || false,
     firstTerm: row.first_term || false,
     secondTerm: row.second_term || false,
-    thirdTerm: row.third_term || false
+    thirdTerm: row.third_term || false,
   };
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTH ROUTES (public)
+// ══════════════════════════════════════════════════════════════════════════════
+
+// POST /api/admin/login
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  const validUsername = process.env.ADMIN_USERNAME;
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH;
+
+  if (!validUsername || !passwordHash) {
+    console.error('Admin credentials not configured in environment variables');
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+
+  // Constant-time username comparison to prevent timing attacks
+  if (username !== validUsername) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const passwordMatch = await bcrypt.compare(password, passwordHash);
+  if (!passwordMatch) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const token = jwt.sign(
+    { username, role: 'admin' },
+    process.env.JWT_SECRET,
+    { expiresIn: '8h' }
+  );
+
+  res.json({ token, expiresIn: 28800 }); // 8 hours in seconds
+});
+
+// POST /api/admin/logout (just client-side token deletion, but good practice)
+app.post('/api/admin/logout', requireAuth, (req, res) => {
+  res.json({ message: 'Logged out successfully' });
+});
+
+// GET /api/admin/verify — check if token is still valid
+app.get('/api/admin/verify', requireAuth, (req, res) => {
+  res.json({ valid: true, user: req.user });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ADMISSION ROUTES (protected — require valid JWT)
+// ══════════════════════════════════════════════════════════════════════════════
+
 // 1. GET ALL ADMISSIONS
-app.get('/api/admissions', async (req, res) => {
+app.get('/api/admissions', requireAuth, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM admissions ORDER BY submitted_at DESC');
     const admissions = result.rows.map(toCamel);
@@ -78,7 +169,7 @@ app.get('/api/admissions', async (req, res) => {
 });
 
 // 2. GET SINGLE ADMISSION BY ID
-app.get('/api/admissions/:id', async (req, res) => {
+app.get('/api/admissions/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('SELECT * FROM admissions WHERE id = $1', [id]);
@@ -92,23 +183,24 @@ app.get('/api/admissions/:id', async (req, res) => {
   }
 });
 
-// 3. CREATE NEW ADMISSION
+// 3. CREATE NEW ADMISSION (public — students submit the form)
 app.post('/api/admissions', async (req, res) => {
   const data = req.body;
 
   // Generate sequential refNo if not provided (pattern AHC26G###)
-  // Finds the highest existing AHC26G### and increments it (including manually edited ones)
-  let refNo = data.refNo
+  let refNo = data.refNo;
   try {
     if (!refNo) {
-      const r = await pool.query("SELECT ref_no FROM admissions WHERE ref_no LIKE 'AHC26G%' ORDER BY CAST(SUBSTRING(ref_no, 8) AS INTEGER) DESC LIMIT 1");
+      const r = await pool.query(
+        "SELECT ref_no FROM admissions WHERE ref_no LIKE 'AHC26G%' ORDER BY CAST(SUBSTRING(ref_no, 8) AS INTEGER) DESC LIMIT 1"
+      );
       if (r.rows.length === 0 || !r.rows[0].ref_no) {
-        refNo = 'AHC26G001'
+        refNo = 'AHC26G001';
       } else {
-        const last = r.rows[0].ref_no
-        const m = last.match(/(\d+)$/)
-        const next = m ? parseInt(m[1], 10) + 1 : 1
-        refNo = 'AHC26G' + String(next).padStart(3, '0')
+        const last = r.rows[0].ref_no;
+        const m = last.match(/(\d+)$/);
+        const next = m ? parseInt(m[1], 10) + 1 : 1;
+        refNo = 'AHC26G' + String(next).padStart(3, '0');
       }
     }
   } catch (err) {
@@ -136,7 +228,7 @@ app.post('/api/admissions', async (req, res) => {
   const values = [
     data.id,
     refNo,
-    data.name.toUpperCase(), // Store name in capitals as requested
+    data.name.toUpperCase(),
     data.adhaarCard || null,
     data.fatherName,
     data.motherName,
@@ -162,8 +254,6 @@ app.post('/api/admissions', async (req, res) => {
     data.motherMobile || null,
     data.ownMobile,
     data.submittedAt || new Date().toISOString(),
-    
-    // Office use fields
     data.admissionNo || '',
     data.enrollmentNo || '',
     data.classAdmitted || '',
@@ -173,7 +263,7 @@ app.post('/api/admissions', async (req, res) => {
     data.miscellaneous || false,
     data.firstTerm || false,
     data.secondTerm || false,
-    data.thirdTerm || false
+    data.thirdTerm || false,
   ];
 
   try {
@@ -186,7 +276,7 @@ app.post('/api/admissions', async (req, res) => {
 });
 
 // 4. DELETE ADMISSION
-app.delete('/api/admissions/:id', async (req, res) => {
+app.delete('/api/admissions/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('DELETE FROM admissions WHERE id = $1 RETURNING *', [id]);
@@ -201,11 +291,10 @@ app.delete('/api/admissions/:id', async (req, res) => {
 });
 
 // 5. UPDATE ADMISSION
-app.put('/api/admissions/:id', async (req, res) => {
+app.put('/api/admissions/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   const data = req.body;
 
-  // Allow partial updates; admin can edit `ref_no` as well
   const query = `
     UPDATE admissions SET
       ref_no = $1, name = $2, adhaar_card = $3, father_name = $4, mother_name = $5, age = $6, dob = $7, sex = $8,
@@ -256,7 +345,7 @@ app.put('/api/admissions/:id', async (req, res) => {
     data.firstTerm ?? false,
     data.secondTerm ?? false,
     data.thirdTerm ?? false,
-    id
+    id,
   ];
 
   try {
@@ -271,10 +360,10 @@ app.put('/api/admissions/:id', async (req, res) => {
   }
 });
 
-// Start server (only if run locally or not on serverless Vercel environment)
+// ── START SERVER ──────────────────────────────────────────────────────────────
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
+    console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   });
 }
 

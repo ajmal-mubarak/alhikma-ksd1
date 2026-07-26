@@ -35,8 +35,7 @@ const MONTHS = [
 ]
 
 const BLOOD_GROUPS = [
-  'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-',
-  'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve', 'AB+ve', 'AB-ve'
+  'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'
 ]
 
 function validateForm(data) {

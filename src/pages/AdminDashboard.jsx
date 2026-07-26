@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { authFetch, clearToken } from '../utils/auth'
 
 export default function AdminDashboard() {
   const [admissions, setAdmissions] = useState([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     loadAdmissions()
@@ -15,7 +17,12 @@ export default function AdminDashboard() {
     setLoading(true)
     setError('')
     try {
-      const response = await fetch('/api/admissions')
+      const response = await authFetch('/api/admissions')
+      if (response.status === 401) {
+        clearToken()
+        navigate('/admin/login', { replace: true })
+        return
+      }
       if (!response.ok) throw new Error('Failed to fetch admissions')
       const data = await response.json()
       setAdmissions(data)
@@ -30,15 +37,25 @@ export default function AdminDashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this admission?')) return
     try {
-      const response = await fetch(`/api/admissions/${id}`, {
+      const response = await authFetch(`/api/admissions/${id}`, {
         method: 'DELETE',
       })
+      if (response.status === 401) {
+        clearToken()
+        navigate('/admin/login', { replace: true })
+        return
+      }
       if (!response.ok) throw new Error('Failed to delete admission')
       setAdmissions(prev => prev.filter(a => a.id !== id))
     } catch (err) {
       console.error('Error deleting admission:', err)
       alert('Could not delete from database. Please try again.')
     }
+  }
+
+  const handleLogout = () => {
+    clearToken()
+    navigate('/admin/login', { replace: true })
   }
 
   const handlePrint = (id) => {
@@ -73,9 +90,24 @@ export default function AdminDashboard() {
           <h1>📋 Admin Dashboard</h1>
           <p>Al Hikma Women's College — Admissions Management 2026</p>
         </div>
-        <Link to="/" className="btn-sm btn-view" style={{ padding: '10px 22px', fontSize: '0.88rem', textDecoration: 'none' }}>
-          ← Back to Form
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link to="/" className="btn-sm btn-view" style={{ padding: '10px 22px', fontSize: '0.88rem', textDecoration: 'none' }}>
+            ← Back to Form
+          </Link>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '10px 20px', fontSize: '0.88rem', fontWeight: 600,
+              background: 'rgba(231,76,60,0.12)', border: '1px solid rgba(231,76,60,0.35)',
+              borderRadius: '20px', color: '#e74c3c', cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => { e.target.style.background = 'rgba(231,76,60,0.25)' }}
+            onMouseLeave={e => { e.target.style.background = 'rgba(231,76,60,0.12)' }}
+          >
+            🔒 Logout
+          </button>
+        </div>
       </header>
 
       <div className="admin-content">

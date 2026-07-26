@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { authFetch } from '../utils/auth'
 
 const MONTHS = [
   'January','February','March','April','May','June',
@@ -7,8 +8,7 @@ const MONTHS = [
 ]
 
 const BLOOD_GROUPS = [
-  'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-',
-  'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve', 'AB+ve', 'AB-ve'
+  'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'
 ]
 
 function validateForm(data) {
@@ -50,7 +50,7 @@ export default function EditAdmission() {
   useEffect(() => {
     const fetchAdmission = async () => {
       try {
-        const response = await fetch(`/api/admissions/${id}`)
+        const response = await authFetch(`/api/admissions/${id}`)
         if (!response.ok) {
           throw new Error(response.status === 404 ? 'Admission record not found' : 'Failed to fetch admission')
         }
@@ -91,11 +91,8 @@ export default function EditAdmission() {
 
     setIsSaving(true)
     try {
-      const response = await fetch(`/api/admissions/${id}`, {
+      const response = await authFetch(`/api/admissions/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(form),
       })
 

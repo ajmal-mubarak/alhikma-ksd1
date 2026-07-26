@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
+import { authFetch } from '../utils/auth'
 
 function V(val) { return val || '' }
 
@@ -152,7 +153,7 @@ export default function PrintView() {
   useEffect(() => {
     ; (async () => {
       try {
-        const res = await fetch(`/api/admissions/${id}`)
+        const res = await authFetch(`/api/admissions/${id}`)
         if (!res.ok) { setNotFound(true); return }
         setData(await res.json())
       } catch { setNotFound(true) }
@@ -312,7 +313,7 @@ export default function PrintView() {
           </Field>
 
           {/* EMAIL */}
-          <Field fieldId="email">{V(data.email)}</Field>
+          <Field fieldId="email" style={{ textTransform: 'lowercase' }}>{V((data.email ?? '').toLowerCase())}</Field>
           {/* BLOOD GROUP */}
           <Field fieldId="bloodgroup">{V(data.bloodgroup)}</Field>
 
